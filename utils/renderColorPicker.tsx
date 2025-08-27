@@ -1,5 +1,3 @@
-import type { SetStateAction } from "react";
-
 const COLORS = [
     'red',
     'amber',
@@ -15,7 +13,7 @@ const COLORS = [
     'rose',
 ];
 
-export function renderColorPicker(setField: { (value: SetStateAction<string>): void; (arg0: string): void; }, currentColor: string) {
+export function renderColorPicker(setField: any, currentColor: string) {
     return <div className="grid grid-cols-5 justify-around gap-5">
         {COLORS.map((color) => (
             <div

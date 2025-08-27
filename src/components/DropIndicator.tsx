@@ -1,4 +1,4 @@
-export const DropIndicator = ({ beforeId, column, headingColor }) => {
+export const DropIndicator = ({ beforeId, column, headingColor }: { beforeId: any, column: any, headingColor: string }) => {
     return (
         <div
             data-before={beforeId || '-1'}

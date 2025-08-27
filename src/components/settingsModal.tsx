@@ -8,7 +8,7 @@ import { renderColorPicker } from '../../utils/renderColorPicker';
 
 const SettingsModal = (props: any) => {
     const [editingColumn, setEditingColumn] = useState<Column | null>(null);
-    const [newColumnId, setNewColumnId] = useState('');
+    const [_newColumnId, setNewColumnId] = useState('');
     const [newColumnName, setNewColumnName] = useState('');
     const [newColumnColor, setNewColumnColor] = useState('');
 
@@ -37,7 +37,7 @@ const SettingsModal = (props: any) => {
         setNewColumnName(column.name);
     }
 
-    function deleteColumn(column: string): void {
+    function deleteColumn(_column: string): void {
         throw new Error('Function not implemented.');
     }
 

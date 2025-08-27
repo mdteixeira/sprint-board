@@ -28,7 +28,7 @@ export const Column: React.FC<ColumnProps> = ({
     const storedUser = sessionStorage.getItem('user');
     const loggedUser: User = storedUser ? JSON.parse(storedUser) : null;
 
-    const handleDragEnd = (e) => {
+    const handleDragEnd = (e: any) => {
         const cardId = e.dataTransfer.getData('cardId');
         const cardOwner = e.dataTransfer.getData('cardOwner');
 
@@ -55,7 +55,7 @@ export const Column: React.FC<ColumnProps> = ({
         }
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         highlightIndicator(e);
 
@@ -70,7 +70,7 @@ export const Column: React.FC<ColumnProps> = ({
         });
     };
 
-    const highlightIndicator = (e) => {
+    const highlightIndicator = (e: any) => {
         const indicators = getIndicators();
 
         clearHighlights(indicators);
@@ -80,11 +80,11 @@ export const Column: React.FC<ColumnProps> = ({
         (el.element as HTMLElement).style.opacity = '1';
     };
 
-    const getNearestIndicator = (e, indicators) => {
+    const getNearestIndicator = (e: { clientY: number; }, indicators: any[]) => {
         const DISTANCE_OFFSET = 50;
 
         const el = indicators.reduce(
-            (closest, child) => {
+            (closest: { offset: number; }, child: { getBoundingClientRect: () => any; }) => {
                 const box = child.getBoundingClientRect();
 
                 const offset = e.clientY - (box.top + DISTANCE_OFFSET);

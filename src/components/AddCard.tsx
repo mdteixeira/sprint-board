@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import type { Card, User } from "types";
+import type { Card, User } from "../../types";
 
-export const AddCard = ({ column, socket, index }) => {
+export const AddCard = ({ column, socket, index }: any) => {
 	const [text, setText] = useState("");
 	const [adding, setAdding] = useState(false);
 
@@ -11,7 +11,7 @@ export const AddCard = ({ column, socket, index }) => {
 	const loggedUser: User = storedUser ? JSON.parse(storedUser) : null;
 
 	useEffect(() => {
-		const listenToShortcut = (e) => {
+		const listenToShortcut = (e: any) => {
 			if (e.ctrlKey) {
 				const pressedNumber = parseInt(e.key).toString();
 				if (pressedNumber === index.toString()) {
@@ -30,7 +30,7 @@ export const AddCard = ({ column, socket, index }) => {
 		document.addEventListener("keydown", listenToShortcut);
 	}, []);
 
-	const handleSubmit = (e) => {
+	const handleSubmit = (e: any) => {
 		console.log("Adding new card:", text, column, loggedUser);
 		e.preventDefault();
 
@@ -54,7 +54,7 @@ export const AddCard = ({ column, socket, index }) => {
 			{adding ? (
 				<motion.form layout onSubmit={handleSubmit}>
 					<input
-						onChange={(e) => setText(e.target.value)}
+						onChange={(e: any) => setText(e.target.value)}
 						autoFocus
 						placeholder="Adicionar Card..."
 						className="w-full rounded-xl border border-violet-400 bg-violet-400/20 p-3 text-sm dark:text-neutral-50 placeholder-violet-300 focus:outline-0 focus:border-violet-400 focus:ring-1 focus:ring-violet-400 transition-colors"

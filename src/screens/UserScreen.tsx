@@ -1,19 +1,25 @@
 import { BiChevronRight, BiUserX } from 'react-icons/bi';
 import type { User } from '../../types';
 import { renderColorPicker } from '../../utils/renderColorPicker';
+import { useEffect, useState } from 'react';
 
-export function renderUserForm(
-    userColor: string,
-    username: string,
-    localData: boolean,
-    room: string,
-    setError: React.Dispatch<React.SetStateAction<string>>,
-    setUser: React.Dispatch<React.SetStateAction<User | null>>,
-    setRoom: React.Dispatch<React.SetStateAction<string>>,
-    setUsername: React.Dispatch<React.SetStateAction<string>>,
-    setUserColor: React.Dispatch<React.SetStateAction<string>>,
-    error: string
-) {
+export function RenderUserForm(props: {
+    username: string;
+    setUsername: (username: string) => void;
+    room: string;
+    setRoom: (room: string) => void;
+    userColor: string;
+    setUserColor: (color: string) => void;
+    setLoggedUser: (user: User | null) => void;
+    localData: string | null;
+}) {
+    useEffect(() => {
+        window.document.title = 'Entrar na sala';
+    }, []);
+    const [error, setError] = useState<string>('');
+
+    const { userColor, setUserColor, username, setUsername, room, setRoom, setLoggedUser: setUser, localData } = props;
+
     return (
         <form
             className="grid place-content-center h-screen"

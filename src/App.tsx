@@ -1,4 +1,3 @@
-
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -12,7 +11,7 @@ import { type Column, updateColumn } from './columns/columns';
 import { Board } from './components/Board';
 import ExportModal from './components/ExportModal';
 import SettingsModal from './components/settingsModal';
-import { renderUserForm } from './screens/UserScreen';
+import { RenderUserForm } from './screens/UserScreen';
 import { BsStarFill } from 'react-icons/bs';
 
 function UserIcon(props: {
@@ -40,7 +39,7 @@ function UserIcon(props: {
                     props.setFilteredUser(props.user);
                 }}>
                 <p>{getInitials(props.user.name)}</p>
-                <small className="absolute mt-24 px-4 py-1.5 rounded-xl group-hover:grid hidden dark:bg-neutral-800 border bg-neutral-100 text-neutral-700 border-neutral-300 dark:text-white dark:border-neutral-700">
+                <small className="absolute mt-24 px-4 py-1.5 rounded-xl group-hover:grid hidden dark:bg-neutral-800 border bg-neutral-100 text-neutral-700 border-neutral-300 dark:text-white dark:border-neutral-700 text-nowrap">
                     {props.user.name}
                 </small>
             </div>
@@ -74,8 +73,6 @@ const App = () => {
     const [loggedUser, setLoggedUser] = useState<User | null>(null);
     const [userColor, setUserColor] = useState<string>('');
     const [socket, setSocket] = useState<SocketService | null>(null);
-
-    const [error, setError] = useState<string>('');
 
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -117,7 +114,7 @@ const App = () => {
         }
 
         setLoading(false);
-    }, [handleSettings, handleExport, renderUserForm]);
+    }, [isSettingsModalOpen]);
 
     useEffect(() => {
         const users: { name: string; color: string }[] = [];
@@ -225,11 +222,11 @@ const App = () => {
         }
     }
 
-    function handleExport(event): void {
+    function handleExport(_event: any): void {
         setIsExportModalOpen(!isExportModalOpen);
     }
 
-    function handleSettings(event): void {
+    function handleSettings(_event: any): void {
         setIsSettingsModalOpen(!isSettingsModalOpen);
     }
 
@@ -375,18 +372,16 @@ const App = () => {
                     />
                 </main>
             ) : (
-                renderUserForm(
-                    userColor,
-                    username,
-                    localData,
-                    room,
-                    setError,
-                    setLoggedUser,
-                    setRoom,
-                    setUsername,
-                    setUserColor,
-                    error
-                )
+                <RenderUserForm
+                    userColor={userColor}
+                    username={username}
+                    localData={localData}
+                    room={room}
+                    setLoggedUser={setLoggedUser}
+                    setRoom={setRoom}
+                    setUsername={setUsername}
+                    setUserColor={setUserColor}
+                />
             )}
         </>
     );

@@ -1,4 +1,4 @@
-import { Card } from '../types';
+import type { Card } from '../types';
 
 export function exportCardsToCSV(cards: Card[], room: string) {
     const content = `Column\tTitle\tUser\n` +

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { FiTrash } from 'react-icons/fi';
-import type { User } from 'types';
+import type { User } from '../../types';
 
-export const BurnBarrel = ({ user, socket }) => {
+export const BurnBarrel = ({ user, socket }: any) => {
     const [active, setActive] = useState(false);
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: any) => {
         e.preventDefault();
         setActive(true);
     };
@@ -14,7 +14,7 @@ export const BurnBarrel = ({ user, socket }) => {
         setActive(false);
     };
 
-    const handleDragEnd = (e) => {
+    const handleDragEnd = (e: any) => {
         setActive(false);
         const cardId = e.dataTransfer.getData('cardId');
         const cardOwner = e.dataTransfer.getData('cardOwner');
