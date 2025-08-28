@@ -114,7 +114,7 @@ const App = () => {
         }
 
         setLoading(false);
-    }, [isSettingsModalOpen]);
+    }, [isSettingsModalOpen, localData, room]);
 
     useEffect(() => {
         const users: { name: string; color: string }[] = [];
@@ -251,6 +251,7 @@ const App = () => {
                             <div className="flex justify-center gap-10">
                                 {users.map((user) => (
                                     <small
+                                        key={user.name}
                                         className={`text-${user.color}-400 font-semibold`}>
                                         {user.name}
                                     </small>
@@ -380,6 +381,7 @@ const App = () => {
                     setLoggedUser={setLoggedUser}
                     setRoom={setRoom}
                     setUsername={setUsername}
+                    setLocalData={setLocalData}
                     setUserColor={setUserColor}
                 />
             )}

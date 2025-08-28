@@ -11,14 +11,41 @@ export function RenderUserForm(props: {
     userColor: string;
     setUserColor: (color: string) => void;
     setLoggedUser: (user: User | null) => void;
+    setLocalData: (localData: string | null) => void;
     localData: string | null;
 }) {
-    useEffect(() => {
-        window.document.title = 'Entrar na sala';
-    }, []);
     const [error, setError] = useState<string>('');
 
-    const { userColor, setUserColor, username, setUsername, room, setRoom, setLoggedUser: setUser, localData } = props;
+    const {
+        userColor,
+        setUserColor,
+        username,
+        setUsername,
+        room,
+        setRoom,
+        setLoggedUser: setUser,
+        localData,
+        setLocalData
+    } = props;
+
+    useEffect(() => {
+        window.document.title = 'Bem vindo! - Sprint Board';
+
+        if (window.location.href) {
+            const url = new URL(window.location.href);
+            const roomParam = url.searchParams.get('room');
+            if (roomParam) props.setRoom(roomParam);
+        }
+    }, []);
+
+    useEffect(() => {
+        window.history.pushState(
+            {},
+            '',
+            `${window.location.pathname}?room=${encodeURIComponent(room)}`
+        );
+        window.document.title = room ? `${room} - Sprint Board` : 'Bem vindo! - Sprint Board';
+    }, [room]);
 
     return (
         <form
@@ -94,6 +121,7 @@ export function RenderUserForm(props: {
                         setUsername('');
                         setUserColor('');
                         setError('');
+                        setLocalData(null);
                     }}
                     className={`px-2 mt-5 h-10 w-10 hover:w-50 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-red-500/25`}>
                     <span className="group-hover:block group-hover:w-full text-nowrap w-0 hidden dark:text-slate-300 font-semibold overflow-hidden">
