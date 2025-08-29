@@ -4,7 +4,7 @@ import { FaAngleLeft, FaTrash } from 'react-icons/fa';
 import { FaPencil, FaXmark } from 'react-icons/fa6';
 import { columns, type Column } from '../columns/columns';
 import type { User } from '../../types';
-import { renderColorPicker } from '../../utils/renderColorPicker';
+import { ColorPicker } from '../../utils/renderColorPicker';
 
 const SettingsModal = (props: any) => {
     const [editingColumn, setEditingColumn] = useState<Column | null>(null);
@@ -114,7 +114,10 @@ const SettingsModal = (props: any) => {
                                 <small className="text-xs mb-2 font-semibold">
                                     Cor - {newColumnColor}
                                 </small>
-                                {renderColorPicker(setNewColumnColor, newColumnColor)}
+                                <ColorPicker
+                                    setField={setNewColumnColor}
+                                    currentColor={newColumnColor}
+                                />
                                 <button
                                     type="submit"
                                     className="px-4 mt-6 py-2 dark:bg-neutral-700/50 dark:text-white rounded-full dark:hover:bg-neutral-500/10 cursor-pointer">

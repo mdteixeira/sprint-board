@@ -1,31 +1,22 @@
 import { BiChevronRight, BiUserX } from 'react-icons/bi';
 import type { User } from '../../types';
-import { renderColorPicker } from '../../utils/renderColorPicker';
 import { useEffect, useState } from 'react';
+import { ColorPicker } from '../../utils/renderColorPicker';
 
 export function RenderUserForm(props: {
-    username: string;
-    setUsername: (username: string) => void;
     room: string;
     setRoom: (room: string) => void;
-    userColor: string;
-    setUserColor: (color: string) => void;
     setLoggedUser: (user: User | null) => void;
-    setLocalData: (localData: string | null) => void;
-    localData: string | null;
 }) {
     const [error, setError] = useState<string>('');
+    const [userColor, setUserColor] = useState<string>('');
+    const [localData, setLocalData] = useState<string | null>(null);
+    const [username, setUsername] = useState<string>('');
 
     const {
-        userColor,
-        setUserColor,
-        username,
-        setUsername,
         room,
         setRoom,
         setLoggedUser: setUser,
-        localData,
-        setLocalData
     } = props;
 
     useEffect(() => {
@@ -44,8 +35,41 @@ export function RenderUserForm(props: {
             '',
             `${window.location.pathname}?room=${encodeURIComponent(room)}`
         );
-        window.document.title = room ? `${room} - Sprint Board` : 'Bem vindo! - Sprint Board';
+        window.document.title = room
+            ? `${room} - Sprint Board`
+            : 'Bem vindo! - Sprint Board';
     }, [room]);
+
+    useEffect(() => {
+        const sessionUser = sessionStorage.getItem('user');
+        const storedRoom = sessionStorage.getItem('room');
+
+        const storedUser = localStorage.getItem('user');
+        setLocalData(storedUser);
+
+        if (storedUser) {
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                setUsername(parsedUser.name);
+                setUserColor(parsedUser.color);
+            } catch (e) {
+                localStorage.removeItem('user');
+            }
+        }
+
+        if (sessionUser) {
+            const parsedUser = JSON.parse(sessionUser);
+            setUser(parsedUser);
+            setUsername(parsedUser.name);
+            setUserColor(parsedUser.color);
+        }
+
+        if (storedRoom) {
+            setRoom(storedRoom);
+        }
+
+        // setLoading(false);
+    }, [localData, room]);
 
     return (
         <form
@@ -93,7 +117,7 @@ export function RenderUserForm(props: {
                         type="text"
                     />
                     <h2 className="mt-10">Qual cor?</h2>
-                    {renderColorPicker(setUserColor, userColor)}
+                    <ColorPicker setField={setUserColor} currentColor={userColor} />
                 </>
             )}
             <button

@@ -16,26 +16,16 @@ const Main = (props: {
     setLoggedUser: any;
     cards: any;
     room: any;
-    users: any;
     setRoom: any;
     setCards: any;
-    setUsers: any;
+    logOut: any;
 }) => {
     const [filteredUser, setFilteredUser] = useState<CardUser | null>(null);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+    const [users, setUsers] = useState<CardUser[]>([]);
 
-    const {
-        socket,
-        loggedUser,
-        setLoggedUser,
-        cards,
-        room,
-        users,
-        setRoom,
-        setCards,
-        setUsers,
-    } = props;
+    const { socket, loggedUser, setLoggedUser, cards, room, logOut } = props;
 
     function handleHide(): void {
         if (socket && loggedUser) {
@@ -94,17 +84,7 @@ const Main = (props: {
                     className={`px-2 grid grid-cols-3 items-center justify-items-center py-1.5 bg-slate-500/5 sticky print:hidden`}>
                     <div className="flex gap-4 items-center w-full">
                         <button
-                            onClick={() => {
-                                if (socket) {
-                                    sessionStorage.removeItem('user');
-                                    sessionStorage.removeItem('room');
-                                    setLoggedUser(null);
-                                    setRoom('');
-                                    setCards([]);
-                                    setUsers([]);
-                                    socket.leaveRoom();
-                                }
-                            }}
+                            onClick={logOut}
                             className={`px-2 h-10 w-10 hover:w-22 grid grid-cols-2 group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-red-500/25`}>
                             <IoExitOutline
                                 size={24}
