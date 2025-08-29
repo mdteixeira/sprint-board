@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FiTrash } from 'react-icons/fi';
-import type { User } from '../../types';
+import { useUser } from '../../context/Context';
 
-export const BurnBarrel = ({ user, socket }: any) => {
+export const BurnBarrel = ({ socket }: any) => {
     const [active, setActive] = useState(false);
 
     const handleDragOver = (e: any) => {
@@ -19,11 +19,10 @@ export const BurnBarrel = ({ user, socket }: any) => {
         const cardId = e.dataTransfer.getData('cardId');
         const cardOwner = e.dataTransfer.getData('cardOwner');
 
-        const storedUser = sessionStorage.getItem('user');
-        const loggedUser: User = storedUser ? JSON.parse(storedUser) : null;
+        const { user } = useUser();
 
-        if (cardOwner !== user.name)
-            if (!loggedUser?.superUser) {
+        if (cardOwner !== user!.name)
+            if (!user?.superUser) {
                 // alert('Você não pode remover cards de outros usuários!');
                 return;
             }

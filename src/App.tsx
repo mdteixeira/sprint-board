@@ -5,47 +5,37 @@ import { type Column, updateColumn } from './columns/columns';
 import { RenderUserForm } from './screens/UserScreen';
 import Main from './components/Main';
 
+import { useRoom, useUser } from '../context/Context.js';
+
 const App = () => {
     // const [loading, setLoading] = useState<boolean>(false);
     const [cards, setCards] = useState<Card[]>([]);
-    const [loggedUser, setLoggedUser] = useState<User | null>(null);
     const [socket, setSocket] = useState<SocketService | null>(null);
-    const [room, setRoom] = useState<string>('');
+
+    const { user, updateUser } = useUser();
+    const { room } = useRoom();
 
     useEffect(() => {
-        if (!room) return;
-        console.log('trying to connect to room:', room);
-        console.log('User:', loggedUser);
-        if (!loggedUser) {
-            console.error('User is not defined. Cannot connect to room.');
-            return;
-        }
+        if (!room || !user) return;
 
         const socket = new SocketService('http://localhost:3000', room);
-
         setSocket(socket);
 
-        socket.onRoomJoin((message: string) => {
-            console.log(message);
-        });
+        socket.onRoomJoin((message: string) => console.log(message));
 
-        socket.onCardInitialized((initialCards: Card[]) => {
-            console.log(` - Cards initialized in room:`, initialCards);
+        socket.onInitialCards((initialCards: Card[]) => {
             setCards(initialCards);
 
-            initialCards.forEach((card) => {
-                setLoggedUser((prevUser) => {
-                    if (prevUser && prevUser.name === card.user.name) {
-                        return {
-                            ...prevUser,
-                            color: card.user.color,
-                            hidden: card.user.hidden,
-                            likes: card.likes || [],
-                        };
-                    }
-                    return prevUser;
+            const updatedUserData =
+                initialCards.find((card) => user && card.user.name === user.name) || null;
+
+            if (updatedUserData && user) {
+                updateUser({
+                    ...user,
+                    color: updatedUserData.user.color,
+                    hidden: updatedUserData.user.hidden,
                 });
-            });
+            }
         });
 
         socket.onRoomLeave((message: string) => {
@@ -76,6 +66,7 @@ const App = () => {
 
         socket.onUserUpdate((updatedUser: User) => {
             console.log(` - User updated:`, updatedUser);
+            sessionStorage.setItem('user', JSON.stringify(updatedUser));
             setCards((prevCards) =>
                 prevCards.map((card) => {
                     if (card.user.name === updatedUser.name) {
@@ -94,18 +85,7 @@ const App = () => {
         return () => {
             socket.disconnect();
         };
-    }, [loggedUser && room]);
-
-    const logOut = () => {
-        if (socket) {
-            sessionStorage.removeItem('user');
-            sessionStorage.removeItem('room');
-            setLoggedUser(null);
-            setRoom('');
-            setCards([]);
-            socket.leaveRoom();
-        }
-    };
+    }, [room]);
 
     return (
         <>
@@ -117,24 +97,7 @@ const App = () => {
                 //         <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-sky-500"></div>
                 //     </div>
                 // ) :
-                loggedUser ? (
-                    <Main
-                        socket={socket}
-                        loggedUser={loggedUser}
-                        setLoggedUser={setLoggedUser}
-                        cards={cards}
-                        room={room}
-                        setRoom={setRoom}
-                        setCards={setCards}
-                        logOut={logOut}
-                    />
-                ) : (
-                    <RenderUserForm
-                        room={room}
-                        setLoggedUser={setLoggedUser}
-                        setRoom={setRoom}
-                    />
-                )
+                room ? <Main socket={socket} cards={cards} /> : <RenderUserForm />
             }
         </>
     );

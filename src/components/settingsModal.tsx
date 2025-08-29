@@ -3,8 +3,8 @@ import { BsStarFill } from 'react-icons/bs';
 import { FaAngleLeft, FaTrash } from 'react-icons/fa';
 import { FaPencil, FaXmark } from 'react-icons/fa6';
 import { columns, type Column } from '../columns/columns';
-import type { User } from '../../types';
 import { ColorPicker } from '../../utils/renderColorPicker';
+import { useUser } from '../../context/Context';
 
 const SettingsModal = (props: any) => {
     const [editingColumn, setEditingColumn] = useState<Column | null>(null);
@@ -12,22 +12,21 @@ const SettingsModal = (props: any) => {
     const [newColumnName, setNewColumnName] = useState('');
     const [newColumnColor, setNewColumnColor] = useState('');
 
-    const storedUser = sessionStorage.getItem('user');
-    const loggedUser: User = storedUser ? JSON.parse(storedUser) : null;
+    const { user } = useUser();
 
-    const [superUser, setSuperUserState] = useState(loggedUser?.superUser || false);
+    const [superUser, setSuperUserState] = useState(user?.superUser || false);
 
     const setSuperUser = () => {
-        if (loggedUser) {
+        if (user) {
             setSuperUserState(!superUser);
-            loggedUser.superUser = !loggedUser.superUser;
-            sessionStorage.setItem('user', JSON.stringify(loggedUser));
-            localStorage.setItem('user', JSON.stringify(loggedUser));
+            user.superUser = !user.superUser;
+            sessionStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('user', JSON.stringify(user));
         }
     };
 
     useEffect(() => {
-        setSuperUserState(loggedUser?.superUser || false);
+        setSuperUserState(user?.superUser || false);
     }, []);
 
     function editColumn(column: Column): void {

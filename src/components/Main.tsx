@@ -9,28 +9,22 @@ import { useEffect, useState } from 'react';
 import type { Card, CardUser } from '../../types';
 import ExportModal from './ExportModal';
 import SettingsModal from './settingsModal';
+import { useRoom, useUser } from '../../context/Context';
 
-const Main = (props: {
-    socket: any;
-    loggedUser: any;
-    setLoggedUser: any;
-    cards: any;
-    room: any;
-    setRoom: any;
-    setCards: any;
-    logOut: any;
-}) => {
+const Main = (props: { socket: any; cards: any }) => {
     const [filteredUser, setFilteredUser] = useState<CardUser | null>(null);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<CardUser[]>([]);
 
-    const { socket, loggedUser, setLoggedUser, cards, room, logOut } = props;
+    const { socket, cards } = props;
+    const { user, updateUser } = useUser();
+    const { leave, room } = useRoom();
 
     function handleHide(): void {
-        if (socket && loggedUser) {
-            setLoggedUser({ ...loggedUser, hidden: !loggedUser.hidden });
-            socket.updateUser({ ...loggedUser, hidden: !loggedUser.hidden });
+        if (socket && user) {
+            updateUser({ ...user, hidden: !user.hidden });
+            socket.updateUser({ ...user, hidden: !user.hidden });
         }
     }
 
@@ -40,6 +34,10 @@ const Main = (props: {
 
     function handleSettings(_event: any): void {
         setIsSettingsModalOpen(!isSettingsModalOpen);
+    }
+
+    function handleLeave(): void {
+        leave();
     }
 
     useEffect(() => {
@@ -72,7 +70,7 @@ const Main = (props: {
                             {users.map((user: CardUser) => (
                                 <small
                                     key={user.name}
-                                    className={`text-${user.color}-400 font-semibold`}>
+                                    className={`text-${user?.color}-400 font-semibold`}>
                                     {user.name}
                                 </small>
                             ))}
@@ -84,7 +82,7 @@ const Main = (props: {
                     className={`px-2 grid grid-cols-3 items-center justify-items-center py-1.5 bg-slate-500/5 sticky print:hidden`}>
                     <div className="flex gap-4 items-center w-full">
                         <button
-                            onClick={logOut}
+                            onClick={handleLeave}
                             className={`px-2 h-10 w-10 hover:w-22 grid grid-cols-2 group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-red-500/25`}>
                             <IoExitOutline
                                 size={24}
@@ -94,9 +92,9 @@ const Main = (props: {
                             </span>
                         </button>
                         <span
-                            className={`text-${loggedUser.color}-400 font-semibold flex items-center gap-2`}>
-                            {loggedUser.name}{' '}
-                            {loggedUser?.superUser && (
+                            className={`text-${user?.color}-400 font-semibold flex items-center gap-2`}>
+                            {user!.name}{' '}
+                            {user?.superUser && (
                                 <button
                                     className={`rounded-full text-amber-500 dark:bg-amber-600/20 bg-amber-200/50`}>
                                     <BsStarFill className="m-2" />
@@ -111,20 +109,20 @@ const Main = (props: {
                         <button
                             onClick={handleHide}
                             className={
-                                loggedUser.hidden
+                                user!.hidden
                                     ? `px-2 h-10 w-32 disabled:text-white hover:w-32 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
                                     : `px-2 h-10 w-10 disabled:w-32 disabled:text-white hover:w-32 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
                             }>
                             <span
                                 className={
-                                    loggedUser.hidden
+                                    user!.hidden
                                         ? 'group-hover:block group-hover:w-full w-32 dark:text-slate-300 font-semibold'
                                         : 'group-hover:block group-hover:w-full w-0 hidden dark:text-slate-300 font-semibold overflow-hidden'
                                 }>
-                                {loggedUser.hidden ? 'Mostrar' : 'Esconder'}
+                                {user!.hidden ? 'Mostrar' : 'Esconder'}
                             </span>
                             <p>
-                                {!loggedUser.hidden ? (
+                                {!user!.hidden ? (
                                     <FaEyeSlash
                                         size={24}
                                         className="dark:text-white text-2xl"
@@ -170,12 +168,7 @@ const Main = (props: {
                         filteredUser={filteredUser}
                         setFilteredUser={setFilteredUser}></UsersFilter>
                 </div>
-                <Board
-                    cards={cards}
-                    loggedUser={loggedUser}
-                    socket={socket}
-                    filteredUser={filteredUser}
-                />
+                <Board cards={cards} socket={socket} filteredUser={filteredUser} />
             </main>
         </>
     );

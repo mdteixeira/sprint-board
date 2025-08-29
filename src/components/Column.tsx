@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import type { Card as ICard, User } from '../../types';
+import type { CardUser, Card as ICard } from '../../types';
 import { AddCard } from './AddCard';
 import { Card } from './Card';
 import { DropIndicator } from './DropIndicator';
+import { useUser } from '../../context/Context';
 
 interface ColumnProps {
     index: number;
@@ -11,7 +12,7 @@ interface ColumnProps {
     cards: Array<ICard>;
     column: string;
     socket: { updateCard: (id: string, card: any) => void } | null;
-    filteredUser?: User | null;
+    filteredUser?: CardUser | null;
 }
 
 export const Column: React.FC<ColumnProps> = ({
@@ -25,8 +26,7 @@ export const Column: React.FC<ColumnProps> = ({
 }) => {
     const [active, setActive] = useState(false);
 
-    const storedUser = sessionStorage.getItem('user');
-    const loggedUser: User = storedUser ? JSON.parse(storedUser) : null;
+    const { user } = useUser();
 
     const handleDragEnd = (e: any) => {
         const cardId = e.dataTransfer.getData('cardId');
@@ -38,8 +38,8 @@ export const Column: React.FC<ColumnProps> = ({
         const indicators = getIndicators();
         const { element } = getNearestIndicator(e, indicators);
 
-        if (cardOwner !== loggedUser.name)
-            if (!loggedUser?.superUser) {
+        if (cardOwner !== user!.name)
+            if (!user?.superUser) {
                 // alert('Você não pode mover cards de outros usuários!');
                 return;
             }
@@ -55,7 +55,7 @@ export const Column: React.FC<ColumnProps> = ({
         }
     };
 
-    const handleDragOver = (e: { preventDefault: () => void; }) => {
+    const handleDragOver = (e: { preventDefault: () => void }) => {
         e.preventDefault();
         highlightIndicator(e);
 
@@ -80,11 +80,14 @@ export const Column: React.FC<ColumnProps> = ({
         (el.element as HTMLElement).style.opacity = '1';
     };
 
-    const getNearestIndicator = (e: { clientY: number; }, indicators: any[]) => {
+    const getNearestIndicator = (e: { clientY: number }, indicators: any[]) => {
         const DISTANCE_OFFSET = 50;
 
         const el = indicators.reduce(
-            (closest: { offset: number; }, child: { getBoundingClientRect: () => any; }) => {
+            (
+                closest: { offset: number },
+                child: { getBoundingClientRect: () => any }
+            ) => {
                 const box = child.getBoundingClientRect();
 
                 const offset = e.clientY - (box.top + DISTANCE_OFFSET);

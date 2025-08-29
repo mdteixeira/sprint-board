@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import type { Card, User } from "../../types";
+import type { Card } from "../../types";
+import { useUser } from "../../context/Context";
 
 export const AddCard = ({ column, socket, index }: any) => {
 	const [text, setText] = useState("");
 	const [adding, setAdding] = useState(false);
 
-	const storedUser = sessionStorage.getItem("user");
-	const loggedUser: User = storedUser ? JSON.parse(storedUser) : null;
+    const { user } = useUser();
 
 	useEffect(() => {
 		const listenToShortcut = (e: any) => {
@@ -31,7 +31,7 @@ export const AddCard = ({ column, socket, index }: any) => {
 	}, []);
 
 	const handleSubmit = (e: any) => {
-		console.log("Adding new card:", text, column, loggedUser);
+		console.log("Adding new card:", text, column, user);
 		e.preventDefault();
 
 		if (!text.trim().length) return;
@@ -40,7 +40,7 @@ export const AddCard = ({ column, socket, index }: any) => {
 			column,
 			title: text.trim(),
 			id: Math.random().toString(),
-			user: loggedUser,
+			user: user!,
 			likes: [],
 		};
 

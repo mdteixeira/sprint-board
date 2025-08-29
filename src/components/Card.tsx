@@ -3,6 +3,7 @@ import { BiLike } from 'react-icons/bi';
 import type { Card as ICard } from '../../types';
 import { FaCircle } from 'react-icons/fa6';
 import { DropIndicator } from './DropIndicator';
+import { useUser } from '../../context/Context';
 
 interface User {
     hidden: boolean;
@@ -31,24 +32,20 @@ export const Card: React.FC<ICard & { socket: any }> = ({
         user: User;
     }
 
-    const storedUser = sessionStorage.getItem('user');
-    const loggedUser: User = storedUser ? JSON.parse(storedUser) : null;
+    const { user } = useUser();
+
+    if (!user) return;
 
     const handleDragStart = (e: DragEventWithCard, card: DraggedCard): void => {
-        console.log(`Dragging card:`, card);
         e.dataTransfer.setData('cardId', card.id);
         e.dataTransfer.setData('cardOwner', card.user.name);
     };
 
     function handleLike(): void {
-        console.log('Card liked!');
-
-        if (likes.some((like) => like.name === loggedUser.name)) {
-            // User already liked the card, so we remove the like
-            likes = likes.filter((like) => like.name !== loggedUser.name);
+        if (likes.some((like) => like.name === user!.name)) {
+            likes = likes.filter((like) => like.name !== user!.name);
         } else {
-            // User hasn't liked the card yet, so we add the like
-            likes = [...likes, loggedUser];
+            likes = [...likes, user];
         }
 
         if (socket) socket.updateCard(id, { title, id, column, user: cardUser, likes });
@@ -56,11 +53,7 @@ export const Card: React.FC<ICard & { socket: any }> = ({
 
     return (
         <>
-            <DropIndicator
-                headingColor={loggedUser.color}
-                beforeId={id}
-                column={column}
-            />
+            <DropIndicator headingColor={user.color} beforeId={id} column={column} />
             <motion.div
                 layout
                 layoutId={id}
@@ -77,7 +70,7 @@ export const Card: React.FC<ICard & { socket: any }> = ({
                 <p
                     className={
                         cardUser.hidden
-                            ? cardUser.name === loggedUser.name
+                            ? cardUser.name === user.name
                                 ? 'bg-neutral-100 dark:bg-neutral-700/40 rounded-md w-auto text-current/50'
                                 : 'bg-neutral-100 dark:bg-neutral-700/40 rounded-md w-auto text-transparent'
                             : 'dark:text-neutral-100'
@@ -108,13 +101,13 @@ export const Card: React.FC<ICard & { socket: any }> = ({
                         ) : (
                             <BiLike
                                 onClick={handleLike}
-                                className={`h-4 w-4 text-neutral-600 hover:text-${loggedUser.color}-400 transition-colors cursor-pointer print:hidden`}
+                                className={`h-4 w-4 text-neutral-600 hover:text-${user.color}-400 transition-colors cursor-pointer print:hidden`}
                             />
                         )}
                         <small
-                            className={`${loggedUser ? `text-${loggedUser.color}-400` : 'text-neutral-600'}`}>
-                            {/* {likes?.length} */}
-                        </small>
+                            className={
+                                user ? `text-${user.color}-400` : 'text-neutral-600'
+                            }></small>
                     </div>
                 </div>
             </motion.div>
