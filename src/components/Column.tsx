@@ -38,11 +38,7 @@ export const Column: React.FC<ColumnProps> = ({
         const indicators = getIndicators();
         const { element } = getNearestIndicator(e, indicators);
 
-        if (cardOwner !== user!.name)
-            if (!user?.superUser) {
-                // alert('Você não pode mover cards de outros usuários!');
-                return;
-            }
+        if (cardOwner !== user!.name && !user?.superUser) return;
 
         const before = element.dataset.before || '-1';
 

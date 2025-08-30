@@ -4,6 +4,7 @@ import { useUser } from '../../context/Context';
 
 export const BurnBarrel = ({ socket }: any) => {
     const [active, setActive] = useState(false);
+    const { user } = useUser();
 
     const handleDragOver = (e: any) => {
         e.preventDefault();
@@ -19,17 +20,9 @@ export const BurnBarrel = ({ socket }: any) => {
         const cardId = e.dataTransfer.getData('cardId');
         const cardOwner = e.dataTransfer.getData('cardOwner');
 
-        const { user } = useUser();
+        if (cardOwner !== user!.name && !user?.superUser) return;
 
-        if (cardOwner !== user!.name)
-            if (!user?.superUser) {
-                // alert('Você não pode remover cards de outros usuários!');
-                return;
-            }
-
-        if (socket) {
-            socket.removeCard(cardId);
-        }
+        if (socket) socket.removeCard(cardId);
 
         setActive(false);
     };

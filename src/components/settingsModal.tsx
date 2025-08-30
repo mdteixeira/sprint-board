@@ -20,7 +20,6 @@ const SettingsModal = (props: any) => {
         if (user) {
             setSuperUserState(!superUser);
             user.superUser = !user.superUser;
-            sessionStorage.setItem('user', JSON.stringify(user));
             localStorage.setItem('user', JSON.stringify(user));
         }
     };

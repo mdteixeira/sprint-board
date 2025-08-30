@@ -8,20 +8,27 @@ import Main from './components/Main';
 import { useRoom, useUser } from '../context/Context.js';
 
 const App = () => {
-    // const [loading, setLoading] = useState<boolean>(false);
     const [cards, setCards] = useState<Card[]>([]);
     const [socket, setSocket] = useState<SocketService | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const { user, updateUser } = useUser();
-    const { room } = useRoom();
+    const { room, join } = useRoom();
 
     useEffect(() => {
+        const storedRoom = sessionStorage.getItem('room');
+
+        if (storedRoom) {
+            join(storedRoom);
+        }
+
         if (!room || !user) return;
 
         const socket = new SocketService('http://localhost:3000', room);
         setSocket(socket);
+        setLoading(true);
 
-        socket.onRoomJoin((message: string) => console.log(message));
+        socket.onRoomJoin(() => setLoading(false));
 
         socket.onInitialCards((initialCards: Card[]) => {
             setCards(initialCards);
@@ -66,7 +73,7 @@ const App = () => {
 
         socket.onUserUpdate((updatedUser: User) => {
             console.log(` - User updated:`, updatedUser);
-            sessionStorage.setItem('user', JSON.stringify(updatedUser));
+            if (updatedUser.name === user.name) updateUser(updatedUser);
             setCards((prevCards) =>
                 prevCards.map((card) => {
                     if (card.user.name === updatedUser.name) {
@@ -83,22 +90,28 @@ const App = () => {
         });
 
         return () => {
+            setCards([]);
             socket.disconnect();
         };
     }, [room]);
 
     return (
         <>
-            <span className="bg-red-500 bg-orange-500 bg-amber-500 bg-yellow-500 bg-lime-500 bg-green-500 bg-emerald-500 bg-teal-500 bg-cyan-500 bg-sky-500 bg-blue-500 bg-indigo-500 bg-violet-500 bg-purple-500 bg-fuchsia-500 bg-pink-500 bg-rose-500"></span>
-            <span className="text-red-400 text-orange-400 text-amber-400 text-yellow-400 text-lime-400 text-green-400 text-emerald-400 text-teal-400 text-cyan-400 text-sky-400 text-blue-400 text-indigo-400 text-violet-400 text-purple-400 text-fuchsia-400 text-pink-400 text-rose-400"></span>
-            {
-                //     loading ? (
-                //     <div className="grid place-content-center h-screen overflow-hidden">
-                //         <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-sky-500"></div>
-                //     </div>
-                // ) :
-                room ? <Main socket={socket} cards={cards} /> : <RenderUserForm />
-            }
+            {room ? (
+                loading ? (
+                    <div className="grid place-content-center text-center h-screen overflow-hidden">
+                        <div
+                            className={`animate-spin rounded-full size-12 mx-auto mb-5 border-t-2 shadow-teal-50 inset-shadow-zinc-800 border-${user?.color}-500`}></div>
+                        <h2>
+                            Entrando na sala <span className="font-semibold">{room}</span>
+                        </h2>
+                    </div>
+                ) : (
+                    <Main socket={socket} cards={cards} />
+                )
+            ) : (
+                <RenderUserForm />
+            )}
         </>
     );
 };

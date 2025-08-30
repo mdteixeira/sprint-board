@@ -1,7 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import type { Column } from '../src/columns/columns';
 import type { Card, User } from '../types';
-import { useUser } from '../context/Context';
 
 class SocketClient {
     private socket: Socket;

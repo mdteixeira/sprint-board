@@ -28,9 +28,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const logout = () => {
-        console.log('ue');
         localStorage.removeItem('user');
-        sessionStorage.removeItem('user');
         setUser(null);
     };
 
@@ -53,7 +51,7 @@ export const RoomProvider = ({ children }: { children: ReactNode }) => {
 
     const leave = () => {
         setRoom(null);
-        localStorage.removeItem('room');
+        sessionStorage.removeItem('room');
     };
 
     const contextValue: RoomContextType = {

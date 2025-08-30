@@ -71,8 +71,8 @@ export const Card: React.FC<ICard & { socket: any }> = ({
                     className={
                         cardUser.hidden
                             ? cardUser.name === user.name
-                                ? 'bg-neutral-100 dark:bg-neutral-700/40 rounded-md w-auto text-current/50'
-                                : 'bg-neutral-100 dark:bg-neutral-700/40 rounded-md w-auto text-transparent'
+                                ? 'bg-neutral-100 dark:bg-neutral-700/40 rounded-md w-auto text-current/50 print:text-current'
+                                : 'bg-neutral-100 dark:bg-neutral-700/40 rounded-md w-auto text-transparent print:text-current print:bg-none'
                             : 'dark:text-neutral-100'
                     }>
                     {title}
@@ -93,7 +93,7 @@ export const Card: React.FC<ICard & { socket: any }> = ({
                                         onClick={handleLike}
                                         className={`h-4 w-4 text-${likedCardUser.color}-400 cursor-pointer group`}
                                     />
-                                    <small className="absolute mt-1 px-4 py-1.5 rounded-xl group-hover:grid hidden dark:bg-neutral-800 border bg-neutral-100 text-neutral-700 border-neutral-300 dark:text-white dark:border-neutral-700">
+                                    <small className="absolute mt-2 px-4 py-1.5 rounded-xl group-hover:grid hidden dark:bg-neutral-800 border bg-neutral-100 text-neutral-700 border-neutral-300 dark:text-white dark:border-neutral-700 text-nowrap translate-x-[-50%]">
                                         {likedCardUser.name}
                                     </small>
                                 </div>

@@ -10,7 +10,6 @@ export function RenderUserForm() {
     const [roomName, setRoom] = useState<string>('');
 
     const { updateUser, logout, user } = useUser();
-
     const { room, join } = useRoom();
 
     useEffect(() => {
@@ -32,11 +31,9 @@ export function RenderUserForm() {
         window.document.title = room
             ? `${room} - Sprint Board`
             : 'Bem vindo! - Sprint Board';
-    }, [room]);
+    }, [roomName]);
 
     useEffect(() => {
-        const sessionUser = sessionStorage.getItem('user');
-        const storedRoom = sessionStorage.getItem('room');
         const storedUser = localStorage.getItem('user');
 
         if (storedUser) {
@@ -44,23 +41,13 @@ export function RenderUserForm() {
                 const parsedUser = JSON.parse(storedUser);
                 setUsername(parsedUser.name);
                 setUserColor(parsedUser.color);
+                updateUser(parsedUser);
             } catch (e) {
                 localStorage.removeItem('user');
             }
         }
 
-        if (sessionUser) {
-            const parsedUser = JSON.parse(sessionUser);
-            setUsername(parsedUser.name);
-            setUserColor(parsedUser.color);
-        }
-
-        if (storedRoom) {
-            setRoom(storedRoom);
-        }
-
-        // setLoading(false);
-    }, [user, room]);
+    }, [room]);
 
     return (
         <form
@@ -71,7 +58,7 @@ export function RenderUserForm() {
                     return setError(
                         generateMissingFieldsMessage(userColor, username, roomName)
                     );
-                updateUser({ name: username, color: userColor, hidden: false });
+                updateUser({ name: username, color: userColor, hidden: true });
                 join(roomName);
             }}>
             <h2 className="mt-20">Sala</h2>

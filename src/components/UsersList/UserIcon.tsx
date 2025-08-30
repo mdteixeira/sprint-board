@@ -16,8 +16,8 @@ export function UserIcon(props: {
             <div
                 className={
                     props.filteredUser?.name === props.user.name
-                        ? `text-white ring-2 dark:ring-neutral-200 ring-neutral-500 ring-offset-white dark:ring-offset-slate-800 bg-${props.user.color}-500 h-12 w-12 rounded-full grid place-items-center cursor-pointer hover:ring-offset-1`
-                        : `text-white bg-${props.user.color}-500 hover:ring-2 ring-offset-1 ring-neutral-500 ring-offset-white dark:ring-offset-slate-800 hover:ring-neutral-300 dark:hover:ring-white/50 h-12 w-12 rounded-full grid place-items-center cursor-pointer`
+                        ? `select-none text-white ring-2 dark:ring-neutral-200 ring-neutral-500 ring-offset-white dark:ring-offset-slate-800 bg-${props.user.color}-500 h-12 w-12 rounded-full grid place-items-center cursor-pointer hover:ring-offset-1`
+                        : `select-none text-white bg-${props.user.color}-500 hover:ring-2 ring-offset-1 ring-neutral-500 ring-offset-white dark:ring-offset-slate-800 hover:ring-neutral-300 dark:hover:ring-white/50 h-12 w-12 rounded-full grid place-items-center cursor-pointer`
                 }
                 onClick={() => {
                     if (props.filteredUser?.name === props.user.name)
