@@ -12,15 +12,15 @@ const SettingsModal = (props: any) => {
     const [newColumnName, setNewColumnName] = useState('');
     const [newColumnColor, setNewColumnColor] = useState('');
 
-    const { user } = useUser();
+    const { user, updateUser } = useUser();
 
     const [superUser, setSuperUserState] = useState(user?.superUser || false);
 
     const setSuperUser = () => {
         if (user) {
             setSuperUserState(!superUser);
-            user.superUser = !user.superUser;
-            localStorage.setItem('user', JSON.stringify(user));
+            updateUser({ ...user, superUser: !superUser });
+            props.socket.updateUser({ ...user, superUser: !superUser });
         }
     };
 

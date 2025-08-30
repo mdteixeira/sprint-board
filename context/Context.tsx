@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import type { User } from '../types'; // ajusta esse import se precisar
+import type { User } from '../types';
 
-// Tipo do contexto
 type UserContextType = {
     user: User | null;
     updateUser: (UserData: User) => void;
@@ -14,11 +13,9 @@ type RoomContextType = {
     leave: () => void;
 };
 
-// Criação do contexto com valor inicial undefined
 const UserContext = createContext<UserContextType | undefined>(undefined);
 const RoomContext = createContext<RoomContextType | undefined>(undefined);
 
-// Provider do contexto
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
 
@@ -63,7 +60,6 @@ export const RoomProvider = ({ children }: { children: ReactNode }) => {
     return <RoomContext.Provider value={contextValue}>{children}</RoomContext.Provider>;
 };
 
-// Hook customizado para usar o contexto
 export const useUser = () => {
     const context = useContext(UserContext);
 

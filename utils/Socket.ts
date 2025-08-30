@@ -66,6 +66,14 @@ class SocketClient {
         this.socket.emit('column.update', this.room, columnToUpdate, newColumn);
     }
 
+    TimerOpen(open: boolean): void {
+        this.socket.emit('timer.open', this.room, open);
+    }
+
+    TimerUpdate(totalSeconds: number, isRunning: boolean): void {
+        this.socket.emit('timer.update', this.room, totalSeconds, isRunning);
+    }
+
     onRoomJoin(callback: (message: string) => void): void {
         this.socket.on('room.join', callback);
     }
@@ -94,8 +102,32 @@ class SocketClient {
         this.socket.on('user.updated', callback);
     }
 
+    onTimer(callback: (open: boolean) => void): void {
+        this.socket.on('timer.open', callback);
+    }
+
+    onTimerUpdate(callback: (totalSeconds: number, isRunning: boolean) => void): void {
+        this.socket.on('timer.updated', callback);
+    }
+
     onColumnUpdate(callback: (columnName: string, newColumn: Column) => void): void {
         this.socket.on('column.updated', callback);
+    }
+
+    onUsersFilterUpdate(callback: (filtered: boolean) => void): void {
+        this.socket.on('filter.users', callback);
+    }
+
+    onHideUpdate(callback: (hidden: boolean) => void): void {
+        this.socket.on('hide.users', callback);
+    }
+
+    hideAll(hide: boolean): void {
+        this.socket.emit('hide.users', this.room, hide);
+    }
+
+    FilterUsers(filter: boolean): void {
+        this.socket.emit('filter.users', this.room, filter);
     }
 
     disconnect(): void {

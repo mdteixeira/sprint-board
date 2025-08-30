@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import type { Card, CardUser } from '../../types';
 import ExportModal from './ExportModal';
 import SettingsModal from './settingsModal';
-import { useRoom, useUser } from '../../context/Context';
+import { useRoom } from '../../context/Context';
 import Header from './Header';
 
 const Main = (props: { socket: any; cards: any }) => {
@@ -14,15 +14,7 @@ const Main = (props: { socket: any; cards: any }) => {
     const [users, setUsers] = useState<CardUser[]>([]);
 
     const { socket, cards } = props;
-    const { user, updateUser } = useUser();
     const { leave, room } = useRoom();
-
-    function handleHide(): void {
-        if (socket && user) {
-            updateUser({ ...user, hidden: !user.hidden });
-            socket.updateUser({ ...user, hidden: !user.hidden });
-        }
-    }
 
     function handleExport(_event: any): void {
         setIsExportModalOpen(!isExportModalOpen);
@@ -53,7 +45,7 @@ const Main = (props: { socket: any; cards: any }) => {
 
     return (
         <>
-            {isSettingsModalOpen && <SettingsModal handleSettings={handleSettings} />}
+            {isSettingsModalOpen && <SettingsModal socket={socket} handleSettings={handleSettings} />}
             {isExportModalOpen && (
                 <ExportModal cards={cards} handleExport={handleExport} />
             )}
@@ -76,13 +68,12 @@ const Main = (props: { socket: any; cards: any }) => {
                 </h2>
                 <Header
                     handleLeave={handleLeave}
-                    handleHide={handleHide}
                     handleExport={handleExport}
                     handleSettings={handleSettings}
                     setFilteredUser={setFilteredUser}
+                    socket={socket}
                 />
-                <div
-                    className="print:hidden h-20 flex items-center justify-between px-10">
+                <div className="print:hidden h-20 flex items-center justify-between px-10">
                     <UsersFilter
                         users={users}
                         filteredUser={filteredUser}
