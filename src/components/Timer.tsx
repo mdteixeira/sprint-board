@@ -121,7 +121,7 @@ function Timer(props: TimerProps) {
     }, []);
 
     return (
-        <div className="absolute mt-32 h-14 w-full text-center flex justify-center items-center bg-neutral-800">
+        <div className="absolute mt-30 h-16 w-full text-center flex justify-center items-center dark:bg-neutral-800 bg-white">
             {user?.superUser ? (
                 <div className="grid grid-cols-3 w-full px-2 items-center">
                     <button
@@ -156,13 +156,13 @@ function Timer(props: TimerProps) {
                     <span className="flex gap-4 mx-auto">
                         <button
                             disabled={isRunning}
-                            className="border border-neutral-600 bg-white dark:bg-neutral-600/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center disabled:opacity-25"
+                            className="border dark:border-neutral-600 border-neutral-300 bg-neutral-50 bg-white dark:bg-neutral-600/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center disabled:opacity-25"
                             onClick={increment}>
                             <BiPlus />
                         </button>
                         <button
                             onClick={handleTimer}
-                            className={`group border border-neutral-600 bg-white dark:bg-neutral-600/50 px-10 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center ${
+                            className={`group border dark:border-neutral-600 border-neutral-300 bg-neutral-50 bg-white dark:bg-neutral-600/50 px-10 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center ${
                                 isRunning ? 'animate-pulse' : ''
                             }`}>
                             <span className="block group-hover:hidden">
@@ -176,7 +176,7 @@ function Timer(props: TimerProps) {
                         </button>
                         <button
                             disabled={isRunning}
-                            className="border border-neutral-600 bg-white dark:bg-neutral-600/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center disabled:opacity-25"
+                            className="border dark:border-neutral-600 border-neutral-300 bg-neutral-50 bg-white dark:bg-neutral-600/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center disabled:opacity-25"
                             onClick={decrement}>
                             <BiMinus />
                         </button>
@@ -185,7 +185,7 @@ function Timer(props: TimerProps) {
                         onClick={handleHideAll}
                         className={
                             areCardsHidden
-                                ? `ml-auto px-2 h-10 w-32 disabled:text-white hover:w-44 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25 text-nowrap`
+                                ? `ml-auto px-2 h-10 w-44 disabled:text-white hover:w-44 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25 text-nowrap`
                                 : `ml-auto px-2 h-10 w-10 disabled:text-white hover:w-44 text-nowrap flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
                         }>
                         <span
@@ -210,7 +210,7 @@ function Timer(props: TimerProps) {
                 </div>
             ) : (
                 <span
-                    className={`group border border-neutral-600 bg-white dark:bg-neutral-600/50 px-10 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center ${
+                    className={`group border dark:border-neutral-600 bg-white dark:bg-neutral-600/50 px-10 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center ${
                         isRunning ? 'animate-pulse' : ''
                     }`}>
                     {/* {isRunning ? formatTime() : <BiPause className="text-3xl" />} */}

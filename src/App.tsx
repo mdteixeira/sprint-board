@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import type { Card, User } from '../types';
+import type { Card, Column, User } from '../types';
 import SocketService from '../utils/Socket';
-import { type Column, updateColumn } from './columns/columns';
 import { RenderUserForm } from './screens/UserScreen';
 import Main from './components/Main';
 
-import { useRoom, useUser } from '../context/Context.js';
+import { useColumns, useRoom, useUser } from '../context/Context.js';
 
 const App = () => {
     const [cards, setCards] = useState<Card[]>([]);
@@ -14,6 +13,8 @@ const App = () => {
 
     const { user, updateUser } = useUser();
     const { room, join } = useRoom();
+    const { updateColumn, deleteColumn, setInitialColumns, initialColumns } =
+        useColumns();
 
     useEffect(() => {
         const storedRoom = sessionStorage.getItem('room');
@@ -27,6 +28,7 @@ const App = () => {
         const socket = new SocketService('http://localhost:3000', room);
         setSocket(socket);
         setLoading(true);
+        setInitialColumns(initialColumns);
 
         socket.onRoomJoin(() => setLoading(false));
 
@@ -85,8 +87,13 @@ const App = () => {
         });
 
         socket.onColumnUpdate((columnName: string, newColumn: Column) => {
-            console.log(` - Column updated:`, columnName);
+            console.log(` - Column updated:`, columnName, newColumn);
             updateColumn(columnName, newColumn);
+        });
+
+        socket.onColumnDelete((columnName: string) => {
+            console.log(` - Column deleted:`, columnName);
+            deleteColumn(columnName);
         });
 
         return () => {

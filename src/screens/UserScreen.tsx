@@ -31,7 +31,7 @@ export function RenderUserForm() {
         window.document.title = room
             ? `${room} - Sprint Board`
             : 'Bem vindo! - Sprint Board';
-    }, [roomName]);
+    }, [roomName, room]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');

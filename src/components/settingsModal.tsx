@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { BsStarFill } from 'react-icons/bs';
 import { FaAngleLeft, FaTrash } from 'react-icons/fa';
 import { FaPencil, FaXmark } from 'react-icons/fa6';
-import { columns, type Column } from '../columns/columns';
 import { ColorPicker } from '../../utils/renderColorPicker';
-import { useUser } from '../../context/Context';
+import { useColumns, useUser } from '../../context/Context';
+import type { Column } from '../../types';
 
 const SettingsModal = (props: any) => {
     const [editingColumn, setEditingColumn] = useState<Column | null>(null);
@@ -13,6 +13,7 @@ const SettingsModal = (props: any) => {
     const [newColumnColor, setNewColumnColor] = useState('');
 
     const { user, updateUser } = useUser();
+    const { columns } = useColumns();
 
     const [superUser, setSuperUserState] = useState(user?.superUser || false);
 
@@ -36,7 +37,7 @@ const SettingsModal = (props: any) => {
     }
 
     function deleteColumn(_column: string): void {
-        throw new Error('Function not implemented.');
+        props.socket.deleteColumn(_column);
     }
 
     document.addEventListener('keydown', (e) => {
@@ -44,6 +45,11 @@ const SettingsModal = (props: any) => {
             props.handleSettings();
         }
     });
+
+    function handleEditColumn(editingColumnId: string, updatedColumn: Column) {
+        console.log("poa s[o", editingColumnId, updatedColumn)
+        props.socket.updateColumn(editingColumnId, updatedColumn);
+    }
 
     return (
         <div className="fixed inset-0 dark:bg-black/50 bg-black/10 z-50 flex items-center justify-center">
@@ -58,7 +64,7 @@ const SettingsModal = (props: any) => {
                 {editingColumn ? (
                     <>
                         <button
-                            className="cursor-pointer flex gap-2 items-center w-24 p-2 bg-neutral-600/25 rounded-full hover:bg-neutral-600/50 transition-colors dark:text-white"
+                            className="cursor-pointer flex gap-2 items-center w-24 p-2 dark:bg-neutral-600/25 bg-neutral-300/25 hover:bg-neutral-400/25 rounded-full dark:hover:bg-neutral-600/50 transition-colors dark:text-white"
                             onClick={() => setEditingColumn(null)}>
                             <FaAngleLeft size={16} className="ml-0.5" />
                             Voltar
@@ -76,36 +82,36 @@ const SettingsModal = (props: any) => {
                             onSubmit={(e) => {
                                 e.preventDefault();
                                 if (!newColumnName || !newColumnColor) return;
-                                props.handleEditColumn(
-                                    editingColumn,
-                                    newColumnName,
-                                    newColumnColor
-                                );
+                                handleEditColumn(editingColumn.column, {
+                                    name: newColumnName,
+                                    color: newColumnColor,
+                                    column: _newColumnId,
+                                });
                                 setEditingColumn(null);
                                 setNewColumnId('');
                                 setNewColumnName('');
                                 setNewColumnColor('');
                             }}
                             className="flex flex-col space-y-2 gap-4">
-                            <div className="flex-col flex gap-1">
+                            {/*                             <div className="flex-col flex gap-1">
                                 <small className="text-xs">Id</small>
                                 <input
                                     type="text"
                                     autoFocus
-                                    value={editingColumn.column}
+                                    value={newColumnName}
                                     onChange={(e) => setNewColumnName(e.target.value)}
                                     placeholder="Nome da coluna"
                                     className="p-2 rounded bg-neutral-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                            </div>
+                            </div> */}
                             <div className="flex-col flex gap-1">
                                 <small className="text-xs">Nome</small>
                                 <input
                                     type="text"
-                                    value={editingColumn.name}
+                                    value={newColumnName}
                                     onChange={(e) => setNewColumnName(e.target.value)}
-                                    placeholder="ID da coluna"
-                                    className="p-2 rounded bg-neutral-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Nome da coluna"
+                                    className="p-2 rounded dark:bg-neutral-800 bg-neutral-100 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                             <div className="flex flex-col gap-1">
@@ -118,7 +124,7 @@ const SettingsModal = (props: any) => {
                                 />
                                 <button
                                     type="submit"
-                                    className="px-4 mt-6 py-2 dark:bg-neutral-700/50 dark:text-white rounded-full dark:hover:bg-neutral-500/10 cursor-pointer">
+                                    className="px-4 mt-6 py-2 dark:bg-neutral-700/50 bg-neutral-300/25 hover:bg-neutral-400/25 dark:text-white rounded-full dark:hover:bg-neutral-500/10 cursor-pointer">
                                     Salvar
                                 </button>
                             </div>
@@ -137,13 +143,13 @@ const SettingsModal = (props: any) => {
                         />
                         <label
                             htmlFor="superUserToggle"
-                            className="dark:text-white w-full flex items-center ps-4 justify-between dark:bg-neutral-800/50 p-1 rounded-3xl cursor-pointer">
+                            className="dark:text-white w-full flex items-center ps-4 justify-between bg-neutral-50 dark:bg-neutral-800/50 p-1 rounded-3xl cursor-pointer">
                             <span className="dark:text-white">Super usuário</span>
                             <span
                                 className={`transition-all rounded-full
                                         ${
                                             superUser
-                                                ? `text-amber-500 dark:bg-amber-600/20 dark:hover:bg-amber-600/30 p-1 hover:text-amber-400`
+                                                ? `text-amber-500 dark:bg-amber-600/20 bg-amber-300/20 hover:bg-amber-400/50 dark:hover:bg-amber-600/30 p-1 hover:text-amber-400`
                                                 : `text-neutral-500 dark:bg-neutral-600/20 dark:hover:bg-neutral-600/30 p-1 hover:text-neutral-400`
                                         }
                                     `}>
@@ -154,17 +160,17 @@ const SettingsModal = (props: any) => {
                         {columns.map((col: Column) => (
                             <div
                                 key={col.column}
-                                className="flex items-center ps-4 justify-between dark:bg-neutral-800/50 p-1 rounded-3xl">
+                                className="flex items-center ps-4 justify-between dark:bg-neutral-800/50 bg-neutral-50 p-1 rounded-3xl">
                                 <span className="dark:text-white">{col.name}</span>
                                 <div className="flex itens-center">
                                     <button
                                         onClick={() => editColumn(col)}
-                                        className="text-neutral-500 cursor-pointer transition-all rounded-s-full dark:bg-neutral-600/20 dark:hover:bg-neutral-600/30 p-1 px-2 hover:text-neutral-200">
+                                        className="text-neutral-500 cursor-pointer transition-all rounded-s-full bg-neutral-300/25 hover:bg-neutral-400/25 dark:bg-neutral-600/20 dark:hover:bg-neutral-600/30 p-1 px-2 dark:hover:text-neutral-200">
                                         <FaPencil className="m-2" />
                                     </button>
                                     <button
                                         onClick={() => deleteColumn(col.column)}
-                                        className="text-red-500 cursor-pointer transition-all rounded-e-full dark:bg-red-600/20 dark:hover:bg-red-600/30 p-1 px-2 hover:text-red-400">
+                                        className="cursor-pointer transition-all rounded-e-full text-red-500 z-3 dark:bg-red-700/30 bg-red-200 dark:hover:bg-red-700/45 hover:bg-red-300/50 dark:hover:text-red-600 p-1 px-2">
                                         <FaTrash className="m-2" />
                                     </button>
                                 </div>

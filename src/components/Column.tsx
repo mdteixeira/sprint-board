@@ -121,13 +121,15 @@ export const Column: React.FC<ColumnProps> = ({
 
     return (
         <div className="w-full">
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex items-center gap-4">
                 <h3 className={`font-medium text-${headingColor}-400`}>{title}</h3>
-                <span className="rounded text-sm text-neutral-400">
-                    {filteredCards.length}
-                </span>
+                {filteredCards.length ? (
+                    <span className="rounded text-sm size-5 bg-current/10 text-center text-neutral-400">
+                        {filteredCards.length}
+                    </span>
+                ) : null}
             </div>
-            <AddCard column={column} socket={socket} index={index} />
+            <AddCard column={column} socket={socket} index={index + 1} />
             <div
                 onDrop={handleDragEnd}
                 onDragOver={handleDragOver}

@@ -99,14 +99,14 @@ const Header = (props: HeaderProps) => {
                         onClick={handleStopwatch}
                         className={
                             timer
-                                ? `px-2 h-10 w-26 disabled:text-white hover:w-full flex gap-2 justify-end group items-center transition-all bg-amber-400/25 cursor-pointer rounded-full hover:bg-amber-400/25`
-                                : `px-2 h-10 w-10 disabled:text-white hover:w-full flex gap-2 justify-end group items-center transition-all bg-amber-300/50 dark:bg-amber-700/25 cursor-pointer rounded-full hover:bg-amber-400/25`
+                                ? `px-2 h-10 w-26 disabled:text-white hover:w-26 flex gap-2 justify-end group items-center transition-all bg-amber-400/25 cursor-pointer rounded-full hover:bg-amber-400/25`
+                                : `px-2 h-10 w-10 disabled:text-white hover:w-26 flex gap-2 justify-end group items-center transition-all bg-amber-300/50 dark:bg-amber-700/25 cursor-pointer rounded-full hover:bg-amber-400/25`
                         }>
                         <span
                             className={
                                 timer
-                                    ? 'group-hover:block group-hover:w-full w-full dark:text-slate-300 font-semibold'
-                                    : 'group-hover:block group-hover:w-full w-0 hidden dark:text-slate-300 font-semibold overflow-hidden'
+                                    ? 'group-hover:block group-hover:w-26 w-26 dark:text-slate-300 font-semibold'
+                                    : 'group-hover:block group-hover:w-26 w-0 hidden dark:text-slate-300 font-semibold overflow-hidden'
                             }>
                             {timer ? 'Fechar' : 'Abrir'}
                         </span>

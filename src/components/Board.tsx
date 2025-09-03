@@ -1,5 +1,5 @@
+import { useColumns } from '../../context/Context';
 import type { Card, CardUser } from '../../types';
-import { columns } from '../columns/columns';
 import { BurnBarrel } from './BurnBarrel';
 import { Column } from './Column';
 
@@ -12,11 +12,13 @@ export const Board = ({
     socket: any;
     filteredUser: CardUser | null;
 }) => {
+    const { columns } = useColumns();
+
     return (
         <div className={`flex w-full gap-3 px-12 flex-1 overflow-hidden`}>
-            {columns.map((col) => (
+            {columns.map((col, index) => (
                 <Column
-                    index={col.index}
+                    index={index}
                     key={col.column}
                     title={col.name}
                     column={col.column}

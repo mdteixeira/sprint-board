@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import type { User } from '../types';
+import type { Column, User } from '../types';
 
 type UserContextType = {
     user: User | null;
@@ -13,8 +13,17 @@ type RoomContextType = {
     leave: () => void;
 };
 
+type ColumnsContextType = {
+    updateColumn: any;
+    deleteColumn: any;
+    setInitialColumns: any;
+    columns: Column[];
+    initialColumns: Column[];
+};
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 const RoomContext = createContext<RoomContextType | undefined>(undefined);
+const ColumnsContext = createContext<ColumnsContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -60,6 +69,71 @@ export const RoomProvider = ({ children }: { children: ReactNode }) => {
     return <RoomContext.Provider value={contextValue}>{children}</RoomContext.Provider>;
 };
 
+export const ColumnProvider = ({ children }: { children: ReactNode }) => {
+    const [columns, setColumns] = useState<Column[]>([]);
+
+    const initialColumns = [
+        { name: 'Devemos continuar', column: 'continue', color: 'emerald' },
+        { name: 'Devemos Parar', column: 'stop', color: 'amber' },
+        { name: 'Podemos melhorar', column: 'improve', color: 'red' },
+        { name: 'Devemos Iniciar', column: 'start', color: 'sky' },
+        { name: 'Plano de ação', column: 'act', color: 'teal' },
+    ];
+
+    const updateColumn = (
+        columnName: string,
+        updatedColumn: Column,
+        position?: number
+    ) => {
+        setColumns((columns) => {
+            const columnToUpdate = columns.find((column) => column.column === columnName);
+            console.log('Updating column: ', columnName, updatedColumn, columnToUpdate);
+            if (columnToUpdate) {
+                columnToUpdate.name = updatedColumn.name;
+                columnToUpdate.color = updatedColumn.color;
+                columnToUpdate.column = updatedColumn.column;
+                console.log(`Column ${columnName} updated to:`, columnToUpdate);
+            } else {
+                console.error(`Column with name ${columnName} not found.`);
+            }
+            return columns;
+        });
+    };
+
+    const deleteColumn = (columnId: string) => {
+        console.log('Deleting column: ', columnId);
+
+        setColumns((cols) => cols.filter((col) => col.column !== columnId));
+
+        console.log(`Column ${columnId} deleted`);
+    };
+
+    const addColumn = (newColumn: Column, position: number) => {
+        console.log('Adding column: ', newColumn.name, newColumn);
+
+        setColumns((cols) => cols.splice(position, 0, newColumn));
+
+        console.log(`Column ${newColumn} added`);
+    };
+
+    const setInitialColumns = (columns: Column[]) => {
+        setColumns(columns);
+    };
+
+    const contextValue = {
+        setInitialColumns,
+        initialColumns,
+        updateColumn,
+        deleteColumn,
+        addColumn,
+        columns,
+    };
+
+    return (
+        <ColumnsContext.Provider value={contextValue}>{children}</ColumnsContext.Provider>
+    );
+};
+
 export const useUser = () => {
     const context = useContext(UserContext);
 
@@ -74,6 +148,15 @@ export const useRoom = () => {
     const context = useContext(RoomContext);
     if (!context) {
         throw new Error('useRoom deve ser usado dentro de um <UserProvider>');
+    }
+
+    return context;
+};
+
+export const useColumns = () => {
+    const context = useContext(ColumnsContext);
+    if (!context) {
+        throw new Error('useColumns deve ser usado dentro de um <UserProvider>');
     }
 
     return context;

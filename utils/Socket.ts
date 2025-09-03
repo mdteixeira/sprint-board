@@ -1,6 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import type { Column } from '../src/columns/columns';
-import type { Card, User } from '../types';
+import type { Card, Column, User } from '../types';
 
 class SocketClient {
     private socket: Socket;
@@ -62,8 +61,16 @@ class SocketClient {
         this.socket.emit('user.update', this.room, user);
     }
 
-    updatecolumn(columnToUpdate: string, newColumn: Column): void {
-        this.socket.emit('column.update', this.room, columnToUpdate, newColumn);
+    updateColumn(columnToUpdate: string, updatedColumn: Column): void {
+        this.socket.emit('column.update', this.room, columnToUpdate, updatedColumn);
+    }
+
+    addColumn(newColumn: Column): void {
+        this.socket.emit('column.add', this.room, newColumn);
+    }
+
+    deleteColumn(columnIdToDelete: string): void {
+        this.socket.emit('column.delete', this.room, columnIdToDelete);
     }
 
     TimerOpen(open: boolean): void {
@@ -112,6 +119,10 @@ class SocketClient {
 
     onColumnUpdate(callback: (columnName: string, newColumn: Column) => void): void {
         this.socket.on('column.updated', callback);
+    }
+
+    onColumnDelete(callback: (columnName: string, newColumn: Column) => void): void {
+        this.socket.on('column.deleted', callback);
     }
 
     onUsersFilterUpdate(callback: (filtered: boolean) => void): void {

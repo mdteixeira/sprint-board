@@ -21,3 +21,9 @@ export interface User {
     hidden: boolean;
     superUser?: boolean;
 }
+
+export interface Column {
+    name: string;
+    column: string;
+    color: string;
+}
