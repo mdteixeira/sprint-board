@@ -83,7 +83,7 @@ export const ColumnProvider = ({ children }: { children: ReactNode }) => {
         { name: 'Devemos Parar', column: 'stop', color: 'amber' },
         { name: 'Podemos melhorar', column: 'improve', color: 'red' },
         { name: 'Devemos Iniciar', column: 'start', color: 'sky' },
-        { name: 'Plano de ação', column: 'act', color: 'teal' },
+        // { name: 'Plano de ação', column: 'act', color: 'teal' },
     ];
 
     const updateColumn = (

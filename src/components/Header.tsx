@@ -120,29 +120,34 @@ const Header = (props: HeaderProps) => {
                         </p>
                     </button>
                 )}
-                <button
-                    onClick={() => handleHide()}
-                    className={
-                        user!.hidden
-                            ? `px-2 h-10 w-32 disabled:text-white hover:w-32 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
-                            : `px-2 h-10 w-10 disabled:text-white hover:w-32 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
-                    }>
-                    <span
+                {/* {false && ( */}
+                    <button
+                        onClick={() => handleHide()}
                         className={
                             user!.hidden
-                                ? 'group-hover:block group-hover:w-full w-32 dark:text-slate-300 font-semibold'
-                                : 'group-hover:block group-hover:w-full w-0 hidden dark:text-slate-300 font-semibold overflow-hidden'
+                                ? `px-2 h-10 w-32 disabled:text-white hover:w-32 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
+                                : `px-2 h-10 w-10 disabled:text-white hover:w-32 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
                         }>
-                        {user!.hidden ? 'Mostrar' : 'Esconder'}
-                    </span>
-                    <p>
-                        {!user!.hidden ? (
-                            <FaEyeSlash size={24} className="dark:text-white text-2xl" />
-                        ) : (
-                            <FaEye size={24} className="dark:text-white text-xl" />
-                        )}
-                    </p>
-                </button>
+                        <span
+                            className={
+                                user!.hidden
+                                    ? 'group-hover:block group-hover:w-full w-32 dark:text-slate-300 font-semibold'
+                                    : 'group-hover:block group-hover:w-full w-0 hidden dark:text-slate-300 font-semibold overflow-hidden'
+                            }>
+                            {user!.hidden ? 'Mostrar' : 'Esconder'}
+                        </span>
+                        <p>
+                            {!user!.hidden ? (
+                                <FaEyeSlash
+                                    size={24}
+                                    className="dark:text-white text-2xl"
+                                />
+                            ) : (
+                                <FaEye size={24} className="dark:text-white text-xl" />
+                            )}
+                        </p>
+                    </button>
+                {/* )} */}
                 {user?.superUser && (
                     <>
                         <button

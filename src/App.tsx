@@ -34,9 +34,11 @@ const App = () => {
 
         socket.onRoomJoin((eventuser) => {
             if (eventuser.name === user.name) setLoading(false);
-            else {
-                addToast({ message: `${eventuser.name} entrou na sala` });
-            }
+            else
+                addToast({
+                    data: eventuser,
+                    type: 'user',
+                });
         });
 
         socket.onInitialCards((initialCards: Card[]) => {

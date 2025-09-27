@@ -29,5 +29,6 @@ export interface Column {
 }
 
 export interface Toast {
-    message: string;
+    type: 'user';
+    data: any;
 }

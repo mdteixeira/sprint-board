@@ -156,13 +156,13 @@ function Timer(props: TimerProps) {
                     <span className="flex gap-4 mx-auto">
                         <button
                             disabled={isRunning}
-                            className="border dark:border-neutral-600 border-neutral-300 bg-neutral-50 bg-white dark:bg-neutral-600/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center disabled:opacity-25"
-                            onClick={increment}>
-                            <BiPlus />
+                            className="border dark:border-neutral-700 border-neutral-300 bg-neutral-50 dark:bg-neutral-700/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-12 w-12 flex items-center justify-center disabled:opacity-25"
+                            onClick={decrement}>
+                            <BiMinus />
                         </button>
                         <button
                             onClick={handleTimer}
-                            className={`group border dark:border-neutral-600 border-neutral-300 bg-neutral-50 bg-white dark:bg-neutral-600/50 px-10 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center ${
+                            className={`group px-10 cursor-pointer text-2xl w-12 grid items-center justify-center ${
                                 isRunning ? 'animate-pulse' : ''
                             }`}>
                             <span className="block group-hover:hidden">
@@ -176,9 +176,9 @@ function Timer(props: TimerProps) {
                         </button>
                         <button
                             disabled={isRunning}
-                            className="border dark:border-neutral-600 border-neutral-300 bg-neutral-50 bg-white dark:bg-neutral-600/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center disabled:opacity-25"
-                            onClick={decrement}>
-                            <BiMinus />
+                            className="border dark:border-neutral-700 border-neutral-300 bg-neutral-50 dark:bg-neutral-700/50 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-12 w-12 flex items-center justify-center disabled:opacity-25"
+                            onClick={increment}>
+                            <BiPlus />
                         </button>
                     </span>
                     <button
@@ -210,7 +210,7 @@ function Timer(props: TimerProps) {
                 </div>
             ) : (
                 <span
-                    className={`group border dark:border-neutral-600 bg-white dark:bg-neutral-600/50 px-10 hover:dark:bg-neutral-700/50 cursor-pointer rounded-full h-8 w-12 grid items-center justify-center ${
+                    className={`group text-xl px-12 grid items-center justify-center ${
                         isRunning ? 'animate-pulse' : ''
                     }`}>
                     {/* {isRunning ? formatTime() : <BiPause className="text-3xl" />} */}

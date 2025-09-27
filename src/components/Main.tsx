@@ -1,11 +1,13 @@
 import { Board } from './Board';
 import { UsersFilter } from './UsersList/UsersFilter';
 import { useEffect, useState } from 'react';
-import type { Card, CardUser } from '../../types';
+import { type Card, type CardUser } from '../../types';
 import ExportModal from './ExportModal';
 import SettingsModal from './settingsModal';
-import { useRoom } from '../../context/Context';
+import { useRoom, useUser } from '../../context/Context';
 import Header from './Header';
+import { FaCheck, FaChevronLeft, FaChevronRight, FaX } from 'react-icons/fa6';
+import { RiPresentationFill } from 'react-icons/ri';
 
 const Main = (props: { socket: any; cards: any }) => {
     const [filteredUser, setFilteredUser] = useState<CardUser | null>(null);
@@ -13,8 +15,12 @@ const Main = (props: { socket: any; cards: any }) => {
     const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<CardUser[]>([]);
 
+    const [presentation, setPresentation] = useState(false);
+    const [presentationUser, setPresentationUser] = useState(0);
+
     const { socket, cards } = props;
     const { leave, room } = useRoom();
+    const { user } = useUser();
 
     function handleExport(_event: any): void {
         setIsExportModalOpen(!isExportModalOpen);
@@ -43,9 +49,52 @@ const Main = (props: { socket: any; cards: any }) => {
         setUsers(users);
     }, [cards]);
 
+    useEffect(() => {
+        const listenToShortcut = (e: any) => {
+            if (e.key === 'ArrowRight') next();
+            if (e.key === 'ArrowLeft') previous();
+        };
+
+        setFilteredUser(presentation ? users[presentationUser] : null);
+
+        if (presentation) {
+            document.addEventListener('keydown', listenToShortcut);
+            socket.hideAll(false);
+        }
+        return () => {
+            document.removeEventListener('keydown', listenToShortcut);
+        };
+    }, [presentation, presentationUser]);
+
+    const next = () => {
+        if (users.length === 0) return;
+        if (presentationUser === users.length - 1) {
+            setPresentationUser(0);
+            setPresentation(false);
+            socket.hideAll(false);
+            return;
+        }
+        setPresentationUser((prev) => prev + 1);
+    };
+
+    const previous = () => {
+        if (users.length === 0) return;
+        if (presentationUser === 0) {
+            setPresentation(false);
+            return;
+        }
+        setPresentationUser((prev) => prev - 1);
+    };
+
+    const handlePresent = () => {
+        setPresentation(!presentation);
+    };
+
     return (
         <>
-            {isSettingsModalOpen && <SettingsModal socket={socket} handleSettings={handleSettings} />}
+            {isSettingsModalOpen && (
+                <SettingsModal socket={socket} handleSettings={handleSettings} />
+            )}
             {isExportModalOpen && (
                 <ExportModal cards={cards} handleExport={handleExport} />
             )}
@@ -74,10 +123,76 @@ const Main = (props: { socket: any; cards: any }) => {
                     socket={socket}
                 />
                 <div className="print:hidden h-20 flex items-center justify-between px-10">
-                    <UsersFilter
-                        users={users}
-                        filteredUser={filteredUser}
-                        setFilteredUser={setFilteredUser}></UsersFilter>
+                    {presentation ? (
+                        <p
+                            className={`text-${users[presentationUser].color}-400 font-semibold text-2xl bg-neutral-300/50 dark:bg-slate-700/25 rounded-full p-2 px-6`}>
+                            {users[presentationUser]?.name}
+                        </p>
+                    ) : (
+                        <UsersFilter
+                            users={users}
+                            filteredUser={filteredUser}
+                            setFilteredUser={setFilteredUser}></UsersFilter>
+                    )}
+                    <div className="flex items-center">
+                        {user?.superUser && (
+                            <button
+                                onClick={() => handlePresent()}
+                                className={
+                                    presentation
+                                        ? `mr-2 px-2 h-10 w-34 disabled:text-white hover:w-34 flex gap-2 justify-end group items-center transition-all bg-red-300/50 dark:bg-red-700/25 cursor-pointer rounded-full hover:bg-red-500/25`
+                                        : `px-2 h-10 w-10 disabled:text-white hover:w-34 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-sky-500/25`
+                                }>
+                                <span
+                                    className={
+                                        presentation
+                                            ? 'group-hover:block group-hover:w-full w-34 dark:text-slate-300 font-semibold'
+                                            : 'group-hover:block group-hover:w-full w-0 hidden dark:text-slate-300 font-semibold overflow-hidden'
+                                    }>
+                                    {presentation ? 'Finalizar' : 'Apresentar'}
+                                </span>
+                                <p>
+                                    {!presentation ? (
+                                        <RiPresentationFill
+                                            size={24}
+                                            className="dark:text-white text-2xl"
+                                        />
+                                    ) : (
+                                        <RiPresentationFill
+                                            size={24}
+                                            className="dark:text-white text-xl"
+                                        />
+                                    )}
+                                </p>
+                            </button>
+                        )}
+                        {presentation && (
+                            <>
+                                <button
+                                    className={`px-3 ps-4 h-10 flex gap-2 justify-end items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-s-full hover:bg-amber-500/25 ${
+                                        presentationUser === 0
+                                            ? 'hover:bg-red-500/30!'
+                                            : ''
+                                    }`}
+                                    onClick={previous}>
+                                    {presentationUser === 0 ? <FaX /> : <FaChevronLeft />}
+                                </button>
+                                <button
+                                    className={`px-3 pe-4 h-10 flex gap-2 justify-end items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-e-full hover:bg-amber-500/25 ${
+                                        presentationUser === users.length - 1
+                                            ? 'hover:bg-emerald-500/30!'
+                                            : ''
+                                    }`}
+                                    onClick={next}>
+                                    {presentationUser === users.length - 1 ? (
+                                        <FaCheck />
+                                    ) : (
+                                        <FaChevronRight />
+                                    )}
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
                 <Board cards={cards} socket={socket} filteredUser={filteredUser} />
             </main>
