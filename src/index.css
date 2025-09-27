@@ -48,7 +48,6 @@ body {
 }
 
 @page {
-    size: A3 landscape; /* Set page size */
     margin: none; /* Set page margins */
 }
 
