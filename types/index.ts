@@ -27,3 +27,7 @@ export interface Column {
     column: string;
     color: string;
 }
+
+export interface Toast {
+    message: string;
+}

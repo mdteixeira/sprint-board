@@ -47,7 +47,7 @@ function Timer(props: TimerProps) {
     };
 
     useEffect(() => {
-        socket.TimerUpdate(totalSeconds, isRunning);
+        if (user?.superUser) socket.TimerUpdate(totalSeconds, isRunning);
         if (isRunning) {
             intervalRef.current = setInterval(() => {
                 setTotalSeconds((prevTotalSeconds) => {

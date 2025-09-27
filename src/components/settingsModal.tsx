@@ -47,7 +47,6 @@ const SettingsModal = (props: any) => {
     });
 
     function handleEditColumn(editingColumnId: string, updatedColumn: Column) {
-        console.log("poa s[o", editingColumnId, updatedColumn)
         props.socket.updateColumn(editingColumnId, updatedColumn);
     }
 

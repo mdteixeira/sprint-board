@@ -111,17 +111,12 @@ const Header = (props: HeaderProps) => {
                             {timer ? 'Fechar' : 'Abrir'}
                         </span>
                         <p>
-                            {!timer ? (
-                                <BsStarFill
-                                    size={24}
-                                    className="text-amber-500 p-0.5 text-2xl"
-                                />
-                            ) : (
+                            {
                                 <BsStarFill
                                     size={24}
                                     className="text-amber-500 p-0.5 text-xl"
                                 />
-                            )}
+                            }
                         </p>
                     </button>
                 )}

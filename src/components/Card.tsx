@@ -75,7 +75,10 @@ export const Card: React.FC<ICard & { socket: any }> = ({
                                 : 'bg-neutral-100 dark:bg-neutral-700/40 rounded-md w-auto text-transparent print:text-current print:bg-none'
                             : 'dark:text-neutral-100'
                     }>
-                    {title}
+                    <span className={'hidden'}>sai daqui</span>
+                    {cardUser.hidden && cardUser.name !== user.name
+                        ? title.replace(/./g, '•')
+                        : title}
                 </p>
                 <div className="flex items-center justify-between space-x-1.5 dark:text-neutral-400 text-black">
                     <div className="flex gap-1 items-center">

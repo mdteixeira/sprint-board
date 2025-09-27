@@ -4,7 +4,7 @@ import SocketService from '../utils/Socket';
 import { RenderUserForm } from './screens/UserScreen';
 import Main from './components/Main';
 
-import { useColumns, useRoom, useUser } from '../context/Context.js';
+import { useColumns, useRoom, useToasts, useUser } from '../context/Context.js';
 
 const App = () => {
     const [cards, setCards] = useState<Card[]>([]);
@@ -13,6 +13,8 @@ const App = () => {
 
     const { user, updateUser } = useUser();
     const { room, join } = useRoom();
+    const { addToast } = useToasts();
+
     const { updateColumn, deleteColumn, setInitialColumns, initialColumns } =
         useColumns();
 
@@ -25,12 +27,17 @@ const App = () => {
 
         if (!room || !user) return;
 
-        const socket = new SocketService('http://localhost:3000', room);
+        const socket = new SocketService('http://localhost:3000', room, user);
         setSocket(socket);
         setLoading(true);
         setInitialColumns(initialColumns);
 
-        socket.onRoomJoin(() => setLoading(false));
+        socket.onRoomJoin((eventuser) => {
+            if (eventuser.name === user.name) setLoading(false);
+            else {
+                addToast({ message: `${eventuser.name} entrou na sala` });
+            }
+        });
 
         socket.onInitialCards((initialCards: Card[]) => {
             setCards(initialCards);
@@ -52,12 +59,12 @@ const App = () => {
         });
 
         socket.onCardAdd((newCard: Card) => {
-            console.log(` - New card added in room:`, newCard);
+            console.log(` - New card added in room`);
             setCards((prevCards) => [...prevCards, newCard]);
         });
 
         socket.onCardUpdate((cardId, updatedCard: Card) => {
-            console.log(` - Card updated in room:`, cardId, updatedCard);
+            console.log(` - Card updated in room:`, cardId);
             setCards((prevCards) =>
                 prevCards.map((card) => {
                     if (card.id === cardId) {

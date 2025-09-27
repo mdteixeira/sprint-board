@@ -4,12 +4,14 @@ import type { Card, Column, User } from '../types';
 class SocketClient {
     private socket: Socket;
     private room: string;
+    private user: User;
 
-    constructor(serverUrl: string, room: string) {
+    constructor(serverUrl: string, room: string, user: User) {
         this.socket = io(serverUrl, {
             transports: ['websocket'],
         });
         this.room = room;
+        this.user = user;
 
         this.socket.on('connect', () => {
             console.log(`Connected to server with ID: ${this.socket.id}`);
@@ -22,17 +24,11 @@ class SocketClient {
     }
 
     private joinRoom(): void {
-        this.socket.emit('joinRoom', this.room);
-        this.socket.on('room.join', (message: string) => {
-            console.log(message);
-        });
+        this.socket.emit('joinRoom', this.room, this.user);
     }
 
     leaveRoom(): void {
         this.socket.emit('leaveRoom', this.room);
-        this.socket.on('room.leave', (message: string) => {
-            console.log(message);
-        });
     }
 
     addCard(card: any): void {
@@ -81,7 +77,7 @@ class SocketClient {
         this.socket.emit('timer.update', this.room, totalSeconds, isRunning);
     }
 
-    onRoomJoin(callback: (message: string) => void): void {
+    onRoomJoin(callback: (message: any) => void): void {
         this.socket.on('room.join', callback);
     }
 

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import type { Column, User } from '../types';
+import type { Column, Toast, User } from '../types';
 
 type UserContextType = {
     user: User | null;
@@ -21,9 +21,15 @@ type ColumnsContextType = {
     initialColumns: Column[];
 };
 
+type ToastsContextType = {
+    toasts: Toast[];
+    addToast: Function;
+};
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 const RoomContext = createContext<RoomContextType | undefined>(undefined);
 const ColumnsContext = createContext<ColumnsContextType | undefined>(undefined);
+const ToastsContext = createContext<ToastsContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -134,6 +140,27 @@ export const ColumnProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
+export const ToastProvider = ({ children }: { children: ReactNode }) => {
+    const [toasts, setToasts] = useState<Toast[]>([]);
+
+    const addToast = (toast: Toast) => {
+        setToasts((current) => [...current, toast]);
+
+        setTimeout(() => {
+            setToasts((current) => current.filter((t) => t !== toast));
+        }, 5000);
+    };
+
+    const contextValue = {
+        addToast,
+        toasts,
+    };
+
+    return (
+        <ToastsContext.Provider value={contextValue}>{children}</ToastsContext.Provider>
+    );
+};
+
 export const useUser = () => {
     const context = useContext(UserContext);
 
@@ -147,7 +174,7 @@ export const useUser = () => {
 export const useRoom = () => {
     const context = useContext(RoomContext);
     if (!context) {
-        throw new Error('useRoom deve ser usado dentro de um <UserProvider>');
+        throw new Error('useRoom deve ser usado dentro de um <RoomProvider>');
     }
 
     return context;
@@ -156,7 +183,16 @@ export const useRoom = () => {
 export const useColumns = () => {
     const context = useContext(ColumnsContext);
     if (!context) {
-        throw new Error('useColumns deve ser usado dentro de um <UserProvider>');
+        throw new Error('useColumns deve ser usado dentro de um <ColumnsProvider>');
+    }
+
+    return context;
+};
+
+export const useToasts = () => {
+    const context = useContext(ToastsContext);
+    if (!context) {
+        throw new Error('useToasts deve ser usado dentro de um <ToastsProvider>');
     }
 
     return context;
