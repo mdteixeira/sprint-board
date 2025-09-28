@@ -4,6 +4,7 @@ import type SocketClient from '../../utils/Socket';
 import { useUser } from '../../context/Context';
 import { FaEyeSlash, FaEye } from 'react-icons/fa6';
 import { IoFilter, IoFilterOutline } from 'react-icons/io5';
+import sound from '/sounds/timer-tick.mp3';
 
 type TimerProps = {
     setTimer: any;
@@ -16,6 +17,7 @@ function Timer(props: TimerProps) {
     const [isRunning, setIsRunning] = useState(false);
     const [areCardsHidden, setCardsHidden] = useState(false);
     const [areUsersFiltered, setUsersFilter] = useState(false);
+    const [ending, setEnding] = useState(false);
 
     const intervalRef = useRef<any | null>(null);
 
@@ -26,6 +28,25 @@ function Timer(props: TimerProps) {
         socket.onTimerUpdate((totalSeconds, isRunning) => {
             setTotalSeconds(totalSeconds);
             setIsRunning(isRunning);
+        });
+        socket.onHideUpdate((hidden) => {
+            setCardsHidden(hidden);
+            updateUser({
+                name: user!.name,
+                hidden,
+                color: user!.color,
+                superUser: user?.superUser,
+            });
+            socket.updateUser({
+                name: user!.name,
+                hidden,
+                color: user!.color,
+                superUser: user?.superUser,
+            });
+        });
+        socket.onUsersFilterUpdate((filtered) => {
+            setUsersFilter(filtered);
+            filtered ? setFilteredUser({ ...user }) : setFilteredUser(null);
         });
     }, []);
 
@@ -51,9 +72,16 @@ function Timer(props: TimerProps) {
         if (isRunning) {
             intervalRef.current = setInterval(() => {
                 setTotalSeconds((prevTotalSeconds) => {
+                    if (prevTotalSeconds === 4) {
+                        setEnding(true);
+                        new Audio(sound).play();
+                    }
+
                     if (prevTotalSeconds <= 1) {
                         setIsRunning(false);
+                        setEnding(false);
                         clearInterval(intervalRef.current!);
+                        socket.TimerOpen(false);
                         return 0;
                     }
                     return prevTotalSeconds - 1;
@@ -92,33 +120,9 @@ function Timer(props: TimerProps) {
         socket.hideAll(!areCardsHidden);
     }
 
-    useEffect(() => {
-        socket.onHideUpdate((hidden) => {
-            setCardsHidden(hidden);
-            updateUser({
-                name: user!.name,
-                hidden,
-                color: user!.color,
-                superUser: user?.superUser,
-            });
-            socket.updateUser({
-                name: user!.name,
-                hidden,
-                color: user!.color,
-                superUser: user?.superUser,
-            });
-        });
-    }, []);
-
     function handleFilterUser(): void {
         socket.FilterUsers(!areUsersFiltered);
     }
-    useEffect(() => {
-        socket.onUsersFilterUpdate((filtered) => {
-            setUsersFilter(filtered);
-            filtered ? setFilteredUser({ ...user }) : setFilteredUser(null);
-        });
-    }, []);
 
     return (
         <div className="absolute mt-30 h-16 w-full text-center flex justify-center items-center dark:bg-neutral-800 bg-white">
@@ -165,7 +169,10 @@ function Timer(props: TimerProps) {
                             className={`group px-10 cursor-pointer text-2xl w-12 grid items-center justify-center ${
                                 isRunning ? 'animate-pulse' : ''
                             }`}>
-                            <span className="block group-hover:hidden">
+                            <span
+                                className={`block group-hover:hidden ${
+                                    ending && 'text-red-500'
+                                }`}>
                                 {formatTime()}
                             </span>
                             {
@@ -212,7 +219,7 @@ function Timer(props: TimerProps) {
                 <span
                     className={`group text-xl px-12 grid items-center justify-center ${
                         isRunning ? 'animate-pulse' : ''
-                    }`}>
+                    } ${ending && 'text-red-500'}`}>
                     {/* {isRunning ? formatTime() : <BiPause className="text-3xl" />} */}
                     {formatTime()}
                 </span>
