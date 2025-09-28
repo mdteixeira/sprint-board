@@ -93,33 +93,21 @@ export const ColumnProvider = ({ children }: { children: ReactNode }) => {
     ) => {
         setColumns((columns) => {
             const columnToUpdate = columns.find((column) => column.column === columnName);
-            console.log('Updating column: ', columnName, updatedColumn, columnToUpdate);
             if (columnToUpdate) {
                 columnToUpdate.name = updatedColumn.name;
                 columnToUpdate.color = updatedColumn.color;
                 columnToUpdate.column = updatedColumn.column;
-                console.log(`Column ${columnName} updated to:`, columnToUpdate);
-            } else {
-                console.error(`Column with name ${columnName} not found.`);
             }
             return columns;
         });
     };
 
     const deleteColumn = (columnId: string) => {
-        console.log('Deleting column: ', columnId);
-
         setColumns((cols) => cols.filter((col) => col.column !== columnId));
-
-        console.log(`Column ${columnId} deleted`);
     };
 
     const addColumn = (newColumn: Column, position: number) => {
-        console.log('Adding column: ', newColumn.name, newColumn);
-
         setColumns((cols) => cols.splice(position, 0, newColumn));
-
-        console.log(`Column ${newColumn} added`);
     };
 
     const setInitialColumns = (columns: Column[]) => {

@@ -1,6 +1,6 @@
 import { Board } from './Board';
 import { UsersFilter } from './UsersList/UsersFilter';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type SetStateAction } from 'react';
 import { type Card, type CardUser } from '../../types';
 import ExportModal from './ExportModal';
 import SettingsModal from './settingsModal';
@@ -50,6 +50,18 @@ const Main = (props: { socket: any; cards: any }) => {
     }, [cards]);
 
     useEffect(() => {
+        socket.onPresentation(
+            (data: {
+                presentation: boolean | ((prevState: boolean) => boolean);
+                presentationUser: SetStateAction<number>;
+            }) => {
+                setPresentation(data.presentation);
+                setPresentationUser(data.presentationUser);
+            }
+        );
+    });
+
+    useEffect(() => {
         const listenToShortcut = (e: any) => {
             if (e.key === 'ArrowRight') next();
             if (e.key === 'ArrowLeft') previous();
@@ -61,6 +73,11 @@ const Main = (props: { socket: any; cards: any }) => {
             document.addEventListener('keydown', listenToShortcut);
             socket.hideAll(false);
         }
+
+        if (user?.superUser) {
+            socket.presentation({ presentation, presentationUser });
+        }
+
         return () => {
             document.removeEventListener('keydown', listenToShortcut);
         };
@@ -86,7 +103,7 @@ const Main = (props: { socket: any; cards: any }) => {
         setPresentationUser((prev) => prev - 1);
     };
 
-    const handlePresent = () => {
+    const handlePresentation = () => {
         setPresentation(!presentation);
     };
 
@@ -125,7 +142,7 @@ const Main = (props: { socket: any; cards: any }) => {
                 <div className="print:hidden h-20 flex items-center justify-between px-10">
                     {presentation ? (
                         <p
-                            className={`text-${users[presentationUser].color}-400 font-semibold text-2xl bg-neutral-300/50 dark:bg-slate-700/25 rounded-full p-2 px-6`}>
+                            className={`text-${users[presentationUser]?.color}-400 font-semibold text-2xl bg-neutral-300/50 dark:bg-slate-700/25 rounded-full p-2 px-6`}>
                             {users[presentationUser]?.name}
                         </p>
                     ) : (
@@ -137,7 +154,7 @@ const Main = (props: { socket: any; cards: any }) => {
                     <div className="flex items-center">
                         {user?.superUser && (
                             <button
-                                onClick={() => handlePresent()}
+                                onClick={() => handlePresentation()}
                                 className={
                                     presentation
                                         ? `mr-2 px-2 h-10 w-34 disabled:text-white hover:w-34 flex gap-2 justify-end group items-center transition-all bg-red-300/50 dark:bg-red-700/25 cursor-pointer rounded-full hover:bg-red-500/25`
@@ -166,7 +183,7 @@ const Main = (props: { socket: any; cards: any }) => {
                                 </p>
                             </button>
                         )}
-                        {presentation && (
+                        {presentation && user?.superUser && (
                             <>
                                 <button
                                     className={`px-3 ps-4 h-10 flex gap-2 justify-end items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-s-full hover:bg-amber-500/25 ${

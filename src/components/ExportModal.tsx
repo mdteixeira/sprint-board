@@ -8,7 +8,6 @@ const ExportModal = (props: any) => {
     function handleExport(type: string) {
         return (e: any) => {
             e.preventDefault();
-            console.log(props, 'props');
             if (type === 'csv') {
                 exportCardsToCSV(props.cards, room);
             } else if (type === 'image') {

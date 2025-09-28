@@ -31,7 +31,6 @@ export const AddCard = ({ column, socket, index }: any) => {
 	}, []);
 
 	const handleSubmit = (e: any) => {
-		console.log("Adding new card:", text, column, user);
 		e.preventDefault();
 
 		if (!text.trim().length) return;

@@ -56,17 +56,11 @@ const App = () => {
             }
         });
 
-        socket.onRoomLeave((message: string) => {
-            console.log(message);
-        });
-
         socket.onCardAdd((newCard: Card) => {
-            console.log(` - New card added in room`);
             setCards((prevCards) => [...prevCards, newCard]);
         });
 
         socket.onCardUpdate((cardId, updatedCard: Card) => {
-            console.log(` - Card updated in room:`, cardId);
             setCards((prevCards) =>
                 prevCards.map((card) => {
                     if (card.id === cardId) {
@@ -78,12 +72,10 @@ const App = () => {
         });
 
         socket.onCardRemove((cardId: string) => {
-            console.log(` - Card removed from room:`, cardId);
             setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
         });
 
         socket.onUserUpdate((updatedUser: User) => {
-            console.log(` - User updated:`, updatedUser);
             if (updatedUser.name === user.name) updateUser(updatedUser);
             setCards((prevCards) =>
                 prevCards.map((card) => {
@@ -96,12 +88,10 @@ const App = () => {
         });
 
         socket.onColumnUpdate((columnName: string, newColumn: Column) => {
-            console.log(` - Column updated:`, columnName, newColumn);
             updateColumn(columnName, newColumn);
         });
 
         socket.onColumnDelete((columnName: string) => {
-            console.log(` - Column deleted:`, columnName);
             deleteColumn(columnName);
         });
 

@@ -14,13 +14,10 @@ class SocketClient {
         this.user = user;
 
         this.socket.on('connect', () => {
-            console.log(`Connected to server with ID: ${this.socket.id}`);
             this.joinRoom();
         });
 
-        this.socket.on('disconnect', () => {
-            console.log('Disconnected from server');
-        });
+        this.socket.on('disconnect', () => {});
     }
 
     private joinRoom(): void {
@@ -37,19 +34,13 @@ class SocketClient {
 
     updateCard(cardId: string, updatedCard: any): void {
         if (!cardId || !updatedCard) {
-            console.error('Card ID and updated card data are required to update a card.');
             return;
         }
-        console.log(`Updating card with ID: ${cardId}`);
         this.socket.emit('card.update', this.room, cardId, updatedCard);
     }
 
     removeCard(cardId: string): void {
-        if (!cardId) {
-            console.error('Card ID is required to remove a card.');
-            return;
-        }
-        console.log(`Removing card with ID: ${cardId}`);
+        if (!cardId) return;
         this.socket.emit('card.remove', this.room, cardId);
     }
 
@@ -75,6 +66,10 @@ class SocketClient {
 
     TimerUpdate(totalSeconds: number, isRunning: boolean): void {
         this.socket.emit('timer.update', this.room, totalSeconds, isRunning);
+    }
+
+    presentation(data: any): void {
+        this.socket.emit('presentation.update', this.room, data);
     }
 
     onRoomJoin(callback: (message: any) => void): void {
@@ -127,6 +122,10 @@ class SocketClient {
 
     onHideUpdate(callback: (hidden: boolean) => void): void {
         this.socket.on('hide.users', callback);
+    }
+
+    onPresentation(callback: (data: any) => void): void {
+        this.socket.on('presentation.status', callback);
     }
 
     hideAll(hide: boolean): void {
