@@ -62,6 +62,17 @@ const Main = (props: { socket: any; cards: any }) => {
     });
 
     useEffect(() => {
+        window.history.pushState(
+            {},
+            '',
+            `${window.location.pathname}?room=${encodeURIComponent(room!)}`
+        );
+        window.document.title = room
+            ? `${room} - Sprint Board`
+            : 'Bem vindo! - Sprint Board';
+    }, [room]);
+
+    useEffect(() => {
         const listenToShortcut = (e: any) => {
             if (e.key === 'ArrowRight') next();
             if (e.key === 'ArrowLeft') previous();
@@ -105,6 +116,7 @@ const Main = (props: { socket: any; cards: any }) => {
 
     const handlePresentation = () => {
         setPresentation(!presentation);
+        socket.hideAll(false);
     };
 
     return (

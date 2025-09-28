@@ -20,6 +20,8 @@ function Timer(props: TimerProps) {
     const [ending, setEnding] = useState(false);
 
     const intervalRef = useRef<any | null>(null);
+    const totalSecondsRef = useRef(totalSeconds);
+    const isRunningRef = useRef(isRunning);
 
     const { socket, setFilteredUser } = props;
     const { user, updateUser } = useUser();
@@ -48,7 +50,38 @@ function Timer(props: TimerProps) {
             setUsersFilter(filtered);
             filtered ? setFilteredUser({ ...user }) : setFilteredUser(null);
         });
+        return () => {
+            socket.removeTimerUpdateListener();
+            socket.removeHideUpdateListener();
+            socket.removeUsersFilterListener();
+        };
     }, []);
+
+    useEffect(() => {
+        totalSecondsRef.current = totalSeconds;
+    }, [totalSeconds]);
+
+    useEffect(() => {
+        isRunningRef.current = isRunning;
+    }, [isRunning]);
+
+    useEffect(() => {
+        socket.onRoomJoin(() => {
+            socket.TimerOpen(true);
+            setTimeout(() => {
+                console.debug(
+                    'sending timer update',
+                    totalSecondsRef.current - 1,
+                    isRunningRef.current
+                );
+                socket.TimerUpdate(totalSecondsRef.current, isRunningRef.current);
+            }, 1000);
+        });
+
+        return () => {
+            socket.removeJoinRoomListener();
+        };
+    }, [socket]);
 
     const increment = () => {
         if (!isRunning) {
@@ -170,7 +203,7 @@ function Timer(props: TimerProps) {
                                 isRunning ? 'animate-pulse' : ''
                             }`}>
                             <span
-                                className={`block group-hover:hidden ${
+                                className={`block tabular-nums group-hover:hidden ${
                                     ending && 'text-red-500'
                                 }`}>
                                 {formatTime()}
@@ -217,7 +250,7 @@ function Timer(props: TimerProps) {
                 </div>
             ) : (
                 <span
-                    className={`group text-xl px-12 grid items-center justify-center ${
+                    className={`group text-2xl tabular-nums px-12 grid items-center justify-center ${
                         isRunning ? 'animate-pulse' : ''
                     } ${ending && 'text-red-500'}`}>
                     {/* {isRunning ? formatTime() : <BiPause className="text-3xl" />} */}

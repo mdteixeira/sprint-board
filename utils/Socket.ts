@@ -76,6 +76,20 @@ class SocketClient {
         this.socket.on('room.join', callback);
     }
 
+    removeJoinRoomListener = () => {
+        this.socket.off('room.join');
+    };
+
+    removeTimerUpdateListener = () => {
+        this.socket.off('timer.updated');
+    };
+    removeHideUpdateListener = () => {
+        this.socket.off('hide.users');
+    };
+    removeUsersFilterListener = () => {
+        this.socket.off('filter.users');
+    };
+
     onRoomLeave(callback: (message: string) => void): void {
         this.socket.on('room.leave', callback);
     }
