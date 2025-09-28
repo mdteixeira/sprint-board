@@ -206,7 +206,7 @@ const SettingsModal = (props: any) => {
                                 <FaUserEdit className="m-2" />
                             </span>
                         </button>
-                        {superUser && (
+                        {superUser && false && ( // not implemented yet
                             <>
                                 <h3 className="text-lg">Colunas</h3>
                                 <>
