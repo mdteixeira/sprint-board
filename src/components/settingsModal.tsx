@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { BsStarFill } from 'react-icons/bs';
-import { FaAngleLeft, FaTrash } from 'react-icons/fa';
-import { FaPencil, FaXmark } from 'react-icons/fa6';
+import { FaAngleLeft, FaTrash, FaUserEdit } from 'react-icons/fa';
+import { FaXmark } from 'react-icons/fa6';
 import { ColorPicker } from '../../utils/renderColorPicker';
 import { useColumns, useUser } from '../../context/Context';
-import type { Column } from '../../types';
+import type { Column, User } from '../../types';
+import { BiSolidPencil } from 'react-icons/bi';
 
 const SettingsModal = (props: any) => {
     const [editingColumn, setEditingColumn] = useState<Column | null>(null);
@@ -14,6 +15,9 @@ const SettingsModal = (props: any) => {
 
     const { user, updateUser } = useUser();
     const { columns } = useColumns();
+
+    const [editingUser, setEditingUser] = useState(false);
+    const [newUserColor, setNewUserColor] = useState(user!.color);
 
     const [superUser, setSuperUserState] = useState(user?.superUser || false);
 
@@ -129,52 +133,109 @@ const SettingsModal = (props: any) => {
                             </div>
                         </form>
                     </>
+                ) : editingUser ? (
+                    <>
+                        <form className="flex flex-col space-y-2 gap-4">
+                            <div className="flex flex-col gap-1">
+                                <small className="text-xs mb-2 font-semibold">
+                                    Cor - {newUserColor}
+                                </small>
+                                <ColorPicker
+                                    setField={setNewUserColor}
+                                    currentColor={newUserColor}
+                                />
+                                <button
+                                    onClick={() => {
+                                        if (user) {
+                                            updateUser({
+                                                ...user,
+                                                color: newUserColor,
+                                            });
+                                            props.socket.updateUser({
+                                                ...user,
+                                                color: newUserColor,
+                                            });
+                                        }
+                                        setEditingUser(false);
+                                    }}
+                                    className="px-4 mt-6 py-2 dark:bg-neutral-700/50 bg-neutral-300/25 hover:bg-neutral-400/25 dark:text-white rounded-full dark:hover:bg-neutral-500/10 cursor-pointer">
+                                    Salvar
+                                </button>
+                            </div>
+                        </form>
+                    </>
                 ) : (
                     <div className="space-y-4 w-96">
-                        <input
-                            type="checkbox"
-                            checked={superUser}
-                            onChange={setSuperUser}
-                            className="cursor-pointer"
-                            id="superUserToggle"
-                            name="superUserToggle"
-                            hidden
-                        />
-                        <label
-                            htmlFor="superUserToggle"
-                            className="dark:text-white w-full flex items-center ps-4 justify-between bg-neutral-50 dark:bg-neutral-800/50 p-1 rounded-3xl cursor-pointer">
-                            <span className="dark:text-white">Super usuário</span>
-                            <span
-                                className={`transition-all rounded-full
+                        {(user!.name.includes('Teixeira') ||
+                            user!.name.includes('Diego')) && (
+                            <>
+                                <input
+                                    type="checkbox"
+                                    checked={superUser}
+                                    onChange={setSuperUser}
+                                    className="cursor-pointer"
+                                    id="superUserToggle"
+                                    name="superUserToggle"
+                                    hidden
+                                />
+                                <label
+                                    htmlFor="superUserToggle"
+                                    className="dark:text-white w-full flex items-center ps-4 justify-between bg-neutral-50 dark:bg-neutral-800/50 p-1 rounded-3xl cursor-pointer">
+                                    <span className="dark:text-white">Super usuário</span>
+                                    <span
+                                        className={`transition-all rounded-full
                                         ${
                                             superUser
                                                 ? `text-amber-500 dark:bg-amber-600/20 bg-amber-300/20 hover:bg-amber-400/50 dark:hover:bg-amber-600/30 p-1 hover:text-amber-400`
                                                 : `text-neutral-500 dark:bg-neutral-600/20 dark:hover:bg-neutral-600/30 p-1 hover:text-neutral-400`
                                         }
                                     `}>
-                                <BsStarFill className="m-2" />
+                                        <BsStarFill className="m-2" />
+                                    </span>
+                                </label>
+                            </>
+                        )}
+                        <button
+                            onClick={() => setEditingUser(true)}
+                            className="dark:text-white w-full flex items-center ps-4 justify-between bg-neutral-50 dark:bg-neutral-800/50 p-1 rounded-3xl cursor-pointer">
+                            <span className="dark:text-white">Atualizar usuário</span>
+                            <span
+                                className={`transition-all rounded-full
+                                        ${`text-neutral-500 dark:bg-neutral-600/20 dark:hover:bg-neutral-600/30 p-1 hover:text-neutral-400`}
+                                    `}>
+                                <FaUserEdit className="m-2" />
                             </span>
-                        </label>
-                        <h3 className="text-lg">Colunas</h3>
-                        {columns.map((col: Column) => (
-                            <div
-                                key={col.column}
-                                className="flex items-center ps-4 justify-between dark:bg-neutral-800/50 bg-neutral-50 p-1 rounded-3xl">
-                                <span className="dark:text-white">{col.name}</span>
-                                <div className="flex itens-center">
-                                    <button
-                                        onClick={() => editColumn(col)}
-                                        className="text-neutral-500 cursor-pointer transition-all rounded-s-full bg-neutral-300/25 hover:bg-neutral-400/25 dark:bg-neutral-600/20 dark:hover:bg-neutral-600/30 p-1 px-2 dark:hover:text-neutral-200">
-                                        <FaPencil className="m-2" />
-                                    </button>
-                                    <button
-                                        onClick={() => deleteColumn(col.column)}
-                                        className="cursor-pointer transition-all rounded-e-full text-red-500 z-3 dark:bg-red-700/30 bg-red-200 dark:hover:bg-red-700/45 hover:bg-red-300/50 dark:hover:text-red-600 p-1 px-2">
-                                        <FaTrash className="m-2" />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                        </button>
+                        {superUser && (
+                            <>
+                                <h3 className="text-lg">Colunas</h3>
+                                <>
+                                    {columns.map((col: Column) => (
+                                        <div
+                                            key={col.column}
+                                            className="flex items-center ps-4 justify-between dark:bg-neutral-800/50 bg-neutral-50 p-1 rounded-3xl">
+                                            <span className="dark:text-white">
+                                                {col.name}
+                                            </span>
+                                            <div className="flex itens-center">
+                                                <button
+                                                    onClick={() => editColumn(col)}
+                                                    className="text-neutral-500 cursor-pointer transition-all rounded-s-full bg-neutral-300/25 hover:bg-neutral-400/25 dark:bg-neutral-600/20 dark:hover:bg-neutral-600/30 p-0.5 px-2 dark:hover:text-neutral-200">
+                                                    <BiSolidPencil className="m-2 text-xl" />
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        deleteColumn(col.column)
+                                                    }
+                                                    className="cursor-pointer transition-all rounded-e-full text-red-500 z-3 dark:bg-red-700/30 bg-red-200 dark:hover:bg-red-700/45 hover:bg-red-300/50 dark:hover:text-red-600 p-1 px-2">
+                                                    <FaTrash className="m-2" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
+                            </>
+                        )}
                     </div>
                 )}
 
