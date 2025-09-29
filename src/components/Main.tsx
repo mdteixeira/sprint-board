@@ -99,7 +99,6 @@ const Main = (props: { socket: any; cards: any }) => {
         if (presentationUser === users.length - 1) {
             setPresentationUser(0);
             setPresentation(false);
-            socket.hideAll(false);
             return;
         }
         setPresentationUser((prev) => prev + 1);
@@ -116,7 +115,6 @@ const Main = (props: { socket: any; cards: any }) => {
 
     const handlePresentation = () => {
         setPresentation(!presentation);
-        socket.hideAll(false);
     };
 
     return (

@@ -46,7 +46,7 @@ const Header = (props: HeaderProps) => {
 
     function handleAdminMode() {
         setCounter(counter + 1);
-        if (counter >= 5) {
+        if (counter >= 1) {
             handleSettings();
             setCounter(0);
         }
