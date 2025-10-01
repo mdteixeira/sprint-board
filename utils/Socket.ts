@@ -33,9 +33,7 @@ class SocketClient {
     }
 
     updateCard(cardId: string, updatedCard: any): void {
-        if (!cardId || !updatedCard) {
-            return;
-        }
+        if (!cardId || !updatedCard) return;
         this.socket.emit('card.update', this.room, cardId, updatedCard);
     }
 
