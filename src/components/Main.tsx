@@ -78,9 +78,22 @@ const Main = (props: { socket: any; cards: any }) => {
             if (e.key === 'ArrowLeft') previous();
         };
 
+        users.sort((a, b) => {
+            const nameA = a.name.toUpperCase();
+            const nameB = b.name.toUpperCase();
+
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+            return 0;
+        });
+
         setFilteredUser(presentation ? users[presentationUser] : null);
 
-        if (presentation) {
+        if (presentation && user?.superUser) {
             document.addEventListener('keydown', listenToShortcut);
             socket.hideAll(false);
         }
@@ -150,17 +163,13 @@ const Main = (props: { socket: any; cards: any }) => {
                     socket={socket}
                 />
                 <div className="print:hidden h-20 flex items-center justify-between px-10">
-                    {presentation ? (
-                        <p
-                            className={`text-${users[presentationUser]?.color}-400 font-semibold text-2xl bg-neutral-300/50 dark:bg-slate-700/25 rounded-full p-2 px-6`}>
-                            {users[presentationUser]?.name}
-                        </p>
-                    ) : (
-                        <UsersFilter
-                            users={users}
-                            filteredUser={filteredUser}
-                            setFilteredUser={setFilteredUser}></UsersFilter>
-                    )}
+                    <UsersFilter
+                        users={users}
+                        filteredUser={filteredUser}
+                        setFilteredUser={
+                            presentation ? setPresentationUser : setFilteredUser
+                        }
+                        presentation={presentation}></UsersFilter>
                     <div className="flex items-center">
                         {user?.superUser && (
                             <button
