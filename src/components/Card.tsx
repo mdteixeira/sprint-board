@@ -60,7 +60,6 @@ export const Card: React.FC<ICard & { socket: any }> = ({
                 user: cardUser,
                 likes,
             });
-        setEditMode(false);
         setEditing(false);
     }
 
