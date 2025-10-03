@@ -25,7 +25,10 @@ export function UserIcon(props: {
                 }
                 onClick={() => {
                     if (props.presentation && !user?.superUser) return;
-                    if (props.filteredUser?.name === props.user.name)
+                    if (
+                        props.filteredUser?.name === props.user.name &&
+                        !props.presentation
+                    )
                         return props.setFilteredUser(null);
 
                     props.setFilteredUser(props.presentation ? props.index : props.user);

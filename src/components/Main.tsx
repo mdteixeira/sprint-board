@@ -46,7 +46,20 @@ const Main = (props: { socket: any; cards: any }) => {
                 return;
             users.push(card.user);
         });
-        setUsers(users);
+        setUsers(
+            users.sort((a, b) => {
+                const nameA = a.name.toUpperCase();
+                const nameB = b.name.toUpperCase();
+
+                if (nameA < nameB) {
+                    return -1;
+                }
+                if (nameA > nameB) {
+                    return 1;
+                }
+                return 0;
+            })
+        );
     }, [cards]);
 
     useEffect(() => {
@@ -78,19 +91,6 @@ const Main = (props: { socket: any; cards: any }) => {
             if (e.key === 'ArrowLeft') previous();
         };
 
-        users.sort((a, b) => {
-            const nameA = a.name.toUpperCase();
-            const nameB = b.name.toUpperCase();
-
-            if (nameA < nameB) {
-                return -1;
-            }
-            if (nameA > nameB) {
-                return 1;
-            }
-            return 0;
-        });
-
         setFilteredUser(presentation ? users[presentationUser] : null);
 
         if (presentation && user?.superUser) {
@@ -119,15 +119,15 @@ const Main = (props: { socket: any; cards: any }) => {
 
     const previous = () => {
         if (users.length === 0) return;
-        if (presentationUser === 0) {
-            setPresentation(false);
-            return;
-        }
+        if (presentationUser === 0) return setPresentation(false);
+        if (presentationUser === null) return setPresentationUser(0);
+
         setPresentationUser((prev) => prev - 1);
     };
 
     const handlePresentation = () => {
         setPresentation(!presentation);
+        setPresentationUser(0);
     };
 
     return (
@@ -202,32 +202,41 @@ const Main = (props: { socket: any; cards: any }) => {
                                 </p>
                             </button>
                         )}
-                        {presentation && user?.superUser && (
-                            <>
-                                <button
-                                    className={`px-3 ps-4 h-10 flex gap-2 justify-end items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-s-full hover:bg-amber-500/25 ${
-                                        presentationUser === 0
-                                            ? 'hover:bg-red-500/30!'
-                                            : ''
-                                    }`}
-                                    onClick={previous}>
-                                    {presentationUser === 0 ? <FaX /> : <FaChevronLeft />}
-                                </button>
-                                <button
-                                    className={`px-3 pe-4 h-10 flex gap-2 justify-end items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-e-full hover:bg-amber-500/25 ${
-                                        presentationUser === users.length - 1
-                                            ? 'hover:bg-emerald-500/30!'
-                                            : ''
-                                    }`}
-                                    onClick={next}>
-                                    {presentationUser === users.length - 1 ? (
-                                        <FaCheck />
-                                    ) : (
-                                        <FaChevronRight />
-                                    )}
-                                </button>
-                            </>
-                        )}
+                        {presentation &&
+                            (user?.superUser ? (
+                                <>
+                                    <button
+                                        className={`px-3 ps-4 h-10 flex gap-2 justify-end items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-s-full hover:bg-amber-500/25 ${
+                                            presentationUser === 0
+                                                ? 'hover:bg-red-500/30!'
+                                                : ''
+                                        }`}
+                                        onClick={previous}>
+                                        {presentationUser === 0 ? (
+                                            <FaX />
+                                        ) : (
+                                            <FaChevronLeft />
+                                        )}
+                                    </button>
+                                    <button
+                                        className={`px-3 pe-4 h-10 flex gap-2 justify-end items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-e-full hover:bg-amber-500/25 ${
+                                            presentationUser === users.length - 1
+                                                ? 'hover:bg-emerald-500/30!'
+                                                : ''
+                                        }`}
+                                        onClick={next}>
+                                        {presentationUser === users.length - 1 ? (
+                                            <FaCheck />
+                                        ) : (
+                                            <FaChevronRight />
+                                        )}
+                                    </button>
+                                </>
+                            ) : (
+                                <span className="bg-neutral-300/50 dark:bg-slate-700/25 py-2 px-6 rounded-full">
+                                    Apresentação
+                                </span>
+                            ))}
                     </div>
                 </div>
                 <Board cards={cards} socket={socket} filteredUser={filteredUser} />
