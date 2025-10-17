@@ -1,6 +1,6 @@
 import { BsStarFill } from 'react-icons/bs';
 import { FaEyeSlash, FaEye } from 'react-icons/fa';
-import { FaGear } from 'react-icons/fa6';
+import { FaGear, FaQuestion } from 'react-icons/fa6';
 import { IoExitOutline } from 'react-icons/io5';
 import { PiExport } from 'react-icons/pi';
 import { useRoom, useUser } from '../../context/Context';
@@ -12,6 +12,7 @@ type HeaderProps = {
     handleLeave: MouseEventHandler<HTMLButtonElement>;
     handleExport: MouseEventHandler<HTMLButtonElement>;
     handleSettings: any;
+    handleHelp: any;
     setFilteredUser: any;
     socket: SocketClient;
 };
@@ -20,7 +21,7 @@ const Header = (props: HeaderProps) => {
     const { user, updateUser } = useUser();
     const { room } = useRoom();
 
-    const { handleLeave, handleExport, handleSettings, socket, setFilteredUser } = props;
+    const { handleLeave, handleExport, handleSettings, handleHelp, socket, setFilteredUser } = props;
 
     const [timer, setTimer] = useState(false);
     const [counter, setCounter] = useState(0);
@@ -168,6 +169,16 @@ const Header = (props: HeaderProps) => {
                             </span>
                             <p>
                                 <FaGear size={24} className="dark:text-white text-2xl" />
+                            </p>
+                        </button>
+                        <button
+                            onClick={handleHelp}
+                            className={`px-2 h-10 w-10 hover:w-28 flex gap-2 justify-end group items-center transition-all bg-neutral-300/50 dark:bg-slate-700/25 cursor-pointer rounded-full hover:bg-pink-500/25`}>
+                            <span className="group-hover:block group-hover:w-full w-0 hidden dark:text-slate-300 font-semibold overflow-hidden">
+                                Ajuda
+                            </span>
+                            <p>
+                                <FaQuestion size={22} className="dark:text-white text-2xl" />
                             </p>
                         </button>
                     </>

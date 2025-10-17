@@ -8,10 +8,12 @@ import { useRoom, useUser } from '../../context/Context';
 import Header from './Header';
 import { FaCheck, FaChevronLeft, FaChevronRight, FaX } from 'react-icons/fa6';
 import { RiPresentationFill } from 'react-icons/ri';
+import HelpModal from './HelpModal';
 
 const Main = (props: { socket: any; cards: any }) => {
     const [filteredUser, setFilteredUser] = useState<CardUser | null>(null);
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
+    const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<CardUser[]>([]);
 
@@ -28,6 +30,9 @@ const Main = (props: { socket: any; cards: any }) => {
 
     function handleSettings(_event: any): void {
         setIsSettingsModalOpen(!isSettingsModalOpen);
+    }
+    function handleHelp(_event?: any): void {
+        setIsHelpModalOpen(!isHelpModalOpen);
     }
 
     function handleLeave(): void {
@@ -138,6 +143,9 @@ const Main = (props: { socket: any; cards: any }) => {
             {isExportModalOpen && (
                 <ExportModal cards={cards} handleExport={handleExport} />
             )}
+            {isHelpModalOpen && (
+                <HelpModal handleHelp={handleHelp} />
+            )}
             <main className="w-full dark:text-neutral-50 text-neutral-700 min-h-screen flex flex-col">
                 <h2>
                     <span className="dark:text-slate-300 font-semibold hidden print:block w-screen py-2.5 mb-5 text-center">
@@ -159,6 +167,7 @@ const Main = (props: { socket: any; cards: any }) => {
                     handleLeave={handleLeave}
                     handleExport={handleExport}
                     handleSettings={handleSettings}
+                    handleHelp={handleHelp}
                     setFilteredUser={setFilteredUser}
                     socket={socket}
                 />
