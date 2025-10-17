@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import type { Card, Column, User } from '../types';
+import type { Card, Column, Encrypted, User } from '../types';
 import SocketService from '../utils/Socket';
 import { RenderUserForm } from './screens/UserScreen';
 import Main from './components/Main';
 
 import { useColumns, useRoom, useToasts, useUser } from '../context/Context.js';
+import { decrypt } from './utils/crypto.js';
 
 const App = () => {
     const [cards, setCards] = useState<Card[]>([]);
@@ -41,7 +42,8 @@ const App = () => {
                 });
         });
 
-        socket.onInitialCards((initialCards: Card[]) => {
+        socket.onInitialCards((data: Encrypted) => {
+            const initialCards: Card[] = decrypt(data[0], data[1]);
             setCards(initialCards);
 
             const updatedUserData =
@@ -56,11 +58,13 @@ const App = () => {
             }
         });
 
-        socket.onCardAdd((newCard: Card) => {
+        socket.onCardAdd((data: Encrypted) => {
+            const newCard = decrypt(data[0], data[1]);
             setCards((prevCards) => [...prevCards, newCard]);
         });
 
-        socket.onCardUpdate((cardId, updatedCard: Card) => {
+        socket.onCardUpdate((cardId, data: Encrypted) => {
+            const updatedCard = decrypt(data[0], data[1]);
             setCards((prevCards) =>
                 prevCards.map((card) => {
                     if (card.id === cardId) {

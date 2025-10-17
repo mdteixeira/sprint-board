@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import type { Card, Column, User } from '../types';
+import type { Column, Encrypted, User } from '../types';
 
 class SocketClient {
     private socket: Socket;
@@ -92,11 +92,11 @@ class SocketClient {
         this.socket.on('room.leave', callback);
     }
 
-    onCardAdd(callback: (card: Card) => void): void {
+    onCardAdd(callback: (data: Encrypted) => void): void {
         this.socket.on('card.added', callback);
     }
 
-    onCardUpdate(callback: (cardId: string, card: Card) => void): void {
+    onCardUpdate(callback: (cardId: string, data: Encrypted) => void): void {
         this.socket.on('card.updated', callback);
     }
 
@@ -104,7 +104,7 @@ class SocketClient {
         this.socket.on('card.removed', callback);
     }
 
-    onInitialCards(callback: (cards: Card[]) => void): void {
+    onInitialCards(callback: (data: Encrypted) => void): void {
         this.socket.on('cards.initial', callback);
     }
 

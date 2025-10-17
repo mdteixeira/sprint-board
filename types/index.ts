@@ -32,3 +32,5 @@ export interface Toast {
     type: 'user';
     data: any;
 }
+
+export type Encrypted = [string, string];
